@@ -2,13 +2,13 @@
 ** EPITECH PROJECT, 2026
 ** Arcade
 ** File description:
-** IElement
+** IEntity
 */
 
-#ifndef IELEMENT_HPP
-    #define IELEMENT_HPP
+#ifndef IENTITY_HPP
+    #define IENTITY_HPP
 
-#include <tuple>
+#include <utility> 
 #include <optional>
 #include <string>
 #include <memory>
@@ -20,9 +20,9 @@ namespace arc {
     using RGBA = std::tuple<unsigned char, unsigned char,
         unsigned char, unsigned char>;
         
-    class IElement {
+    class IEntity {
         public:
-            virtual ~IElement() = default;
+            virtual ~IEntity() = default;
             
             virtual int getIdx() = 0;
             virtual Vector2f getPos() = 0;
@@ -32,7 +32,7 @@ namespace arc {
             virtual std::optional<std::string> getStr() = 0;
     };
     
-    using Elements = std::vector<std::unique_ptr<arc::IElement>>;
+    using Entities = std::vector<std::unique_ptr<arc::IEntity>>;
 }
 
 #endif

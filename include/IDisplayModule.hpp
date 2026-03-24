@@ -12,7 +12,9 @@
 #include <string>
 #include <optional>
 #include <memory>
-#include "IElement.hpp"
+#include "Arcade.hpp"
+#include "IEntity.hpp"
+#include "ISound.hpp"
 
 namespace arc {
     class IDisplayModule {
@@ -20,8 +22,9 @@ namespace arc {
             virtual ~IDisplayModule() = default;
 
             virtual Event getEvent() = 0;
-            virtual int setAsset(std::vector<std::string>) = 0;
-            virtual void drawGame(Elements) = 0;
+            virtual int setAssets(Assets) = 0;
+            virtual void drawGame(std::reference_wrapper<
+                std::pair<Entities, Sounds>>) = 0;
     };
 }
 

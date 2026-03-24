@@ -8,13 +8,15 @@
 #ifndef ARCADE_HPP
     #define ARCADE_HPP
 
-#include <tuple>
+#include <utility>
 
 namespace arc
 {
-    using Vector2f = std::tuple<float, float>;
+    using Vector2f = std::pair<float, float>;
+    using Assets = std::pair<std::vector<std::string>,
+        std::vector<std::string>>;
 
-    enum class Key
+    enum class Action
     {
         None = -1, //!< Unhandled key
         A = 0,        //!< The A key
@@ -123,7 +125,9 @@ namespace arc
         RightMouse,   //!< The Right Mouse Button
         MiddleMouse,  //!< The Middle Mouse Button
 
-        KeyCount,     //!< Keep last -- the total number of keyboard keys
+        Close,        //!< The Close Button
+
+        ActionCount,     //!< Keep last -- the total number of keyboard keys
 
         Tilde     = Grave,     //!< \deprecated Use Grave instead
         Dash      = Hyphen,    //!< \deprecated Use Hyphen instead
@@ -134,7 +138,7 @@ namespace arc
         Quote     = Apostrophe //!< \deprecated Use Apostrophe instead
     };
 
-    using Event = std::tuple<Key, Vector2f>;
+    using Event = std::pair<Action, Vector2f>;
 }
 
 #endif
