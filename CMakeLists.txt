@@ -13,7 +13,6 @@ set(SRCS
 
 set(HEADERS
     include/
-    include/Components
 )
 
 add_executable(arcade ${MAIN} ${SRCS})

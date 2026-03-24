@@ -11,16 +11,17 @@
 #include <vector>
 #include <string>
 #include <optional>
+#include <memory>
 #include "IElement.hpp"
 
 namespace arc {
     class IDisplayModule {
         public:
-            ~IDisplayModule() = default;
+            virtual ~IDisplayModule() = default;
 
             virtual Event getEvent() = 0;
             virtual int setAsset(std::vector<std::string>) = 0;
-            virtual void drawGame(std::vector<IElement>) = 0;
+            virtual void drawGame(Elements) = 0;
     };
 }
 

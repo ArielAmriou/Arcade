@@ -13,7 +13,6 @@
 namespace arc
 {
     using Vector2f = std::tuple<float, float>;
-    using Event = std::tuple<Key, Vector2f>;
 
     enum class Key
     {
@@ -134,6 +133,8 @@ namespace arc
         Return    = Enter,     //!< \deprecated Use Enter instead
         Quote     = Apostrophe //!< \deprecated Use Apostrophe instead
     };
+
+    using Event = std::tuple<Key, Vector2f>;
 }
 
 #endif
