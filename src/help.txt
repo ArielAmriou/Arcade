@@ -1,0 +1,2 @@
+Error: './lib/arcade_snake.so' not a graphical library
+Exit code: 84

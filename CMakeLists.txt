@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MAIN
     src/Main.cpp
+    src/Core.cpp
+    src/DLLoader.cpp
 )
 
 set(SRCS
@@ -13,6 +15,7 @@ set(SRCS
 
 set(HEADERS
     include/
+    include/Shared
 )
 
 add_executable(arcade ${MAIN} ${SRCS})

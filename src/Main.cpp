@@ -5,7 +5,23 @@
 ** Main
 */
 
-int main()
+#include <iostream>
+#include "Arcade.hpp"
+#include "Core.hpp"
+#include "Exceptions.hpp"
+
+int main(const int ac, const char **av)
 {
-    return 0;
+    if (ac != 2)
+        return EPIERROR;
+    
+    try {
+        arc::Core core(av[1]);
+    } catch (const arc::exceptions::NotGraphical &e) {
+        arc::Core::help();
+        return EPIERROR;
+    } catch (const arc::exceptions::LibraryLoadError &e) {
+        std::cerr << e.what() << std::endl;
+        return EPIERROR;
+    }
 }
