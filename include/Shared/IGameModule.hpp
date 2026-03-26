@@ -10,7 +10,6 @@
 
 #include <vector>
 #include <memory>
-#include "Utility.hpp"
 #include "IEntity.hpp"
 #include "ISound.hpp"
 #include "ILibrary.hpp"

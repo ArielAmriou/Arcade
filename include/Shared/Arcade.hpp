@@ -12,6 +12,10 @@
 #include <vector>
 #include <string>
 
+constexpr int SUCCESS = 0;
+constexpr int EPIERROR = 84;
+constexpr int ERROR = -1;
+
 namespace arc
 {
     using Vector2f = std::pair<float, float>;

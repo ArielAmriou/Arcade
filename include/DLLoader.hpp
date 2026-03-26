@@ -16,10 +16,9 @@
 #include <optional>
 #include <memory>
 #include "ILibrary.hpp"
-// #include "IDisplayModule.hpp"
-// #include "IGameModule.hpp"
 
 namespace arc {
+    class DLLoader;
 
     template<typename T>
     concept BaseILibrary = std::is_base_of<ILibrary, T>::value;
@@ -32,10 +31,18 @@ namespace arc {
             void reset(const std::string &path);
 
             template<BaseILibrary T>
-            std::optional<std::unique_ptr<T>> makeInstance();
+            std::optional<std::unique_ptr<T>> makeInstance() {
+                auto tmp = dynamic_cast<T *>(getInstance());
+                if (tmp == nullptr)
+                    return {};
+                std::unique_ptr<T> obj(tmp);
+                return obj;
+            }
 
             template<BaseILibrary T>
-            bool isType();
+            bool isType() {
+                return makeInstance<T>().has_value();
+            }
 
         private:
             void *_handle = nullptr;

@@ -6,11 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MAIN
     src/Main.cpp
-    src/Core.cpp
-    src/DLLoader.cpp
 )
 
 set(SRCS
+    src/Core.cpp
+    src/DLLoader.cpp
 )
 
 set(HEADERS
@@ -39,4 +39,10 @@ add_custom_target(tests_run
     COMMAND ${CMAKE_COMMAND} -E rm -f log.bin rom.bin
     DEPENDS tests_run_bin
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+# target_compile_options(arcade PRIVATE -g)
+
+add_custom_target(libs
+    COMMAND ${CMAKE_COMMAND} --build lib/
 )

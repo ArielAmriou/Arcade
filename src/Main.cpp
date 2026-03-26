@@ -17,6 +17,7 @@ int main(const int ac, const char **av)
     
     try {
         arc::Core core(av[1]);
+        core.play();
     } catch (const arc::exceptions::NotGraphical &e) {
         arc::Core::help();
         return EPIERROR;

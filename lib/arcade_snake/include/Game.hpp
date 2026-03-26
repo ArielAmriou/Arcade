@@ -9,6 +9,7 @@
     #define GAME_HPP
 
 #include <array>
+#include "Arcade.hpp"
 #include "IGameModule.hpp"
 
 namespace arc {

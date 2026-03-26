@@ -10,6 +10,7 @@
 #include "Game.hpp"
 #include "Entity.hpp"
 #include "Sound.hpp"
+#include "IGameModule.hpp"
 
 arc::Game::Game() : _rotation(90)
 {
@@ -145,3 +146,13 @@ const std::pair<std::vector<std::string>, std::vector<std::string>> arc::Game::_
         "pickUp.wav"
     }
 };
+
+extern "C"
+{
+
+    arc::ILibrary *makeInstance()
+    {
+        return new arc::Game();
+    }
+
+}

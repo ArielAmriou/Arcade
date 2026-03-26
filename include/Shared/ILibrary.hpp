@@ -12,7 +12,7 @@ namespace arc {
 
     class ILibrary {
         public:
-            ~ILibrary() = default;
+            virtual ~ILibrary() = default;
     };
 
 }
