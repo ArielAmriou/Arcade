@@ -41,7 +41,7 @@ add_custom_target(tests_run
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-# target_compile_options(arcade PRIVATE -g)
+target_compile_options(arcade PRIVATE -fno-gnu-unique -O3)
 
 add_custom_target(libs
     COMMAND ${CMAKE_COMMAND} --build lib/
