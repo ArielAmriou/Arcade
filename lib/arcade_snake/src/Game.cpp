@@ -12,7 +12,10 @@
 #include "Sound.hpp"
 #include "IGameModule.hpp"
 
-arc::Game::Game() : _rotation(90)
+#include <iostream>
+#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
+
+arc::Game::Game() : _rotation(90), _tick(0)
 {
     srand((unsigned)time(0));
     int head = rand() % SIZE;
@@ -37,23 +40,32 @@ arc::Game::Game() : _rotation(90)
 
 void arc::Game::simulate(Event event)
 {
-    Action action = event.first;
     int head = _snake[0];
 
-    if (action == Action::A || action == Action::Close)
+    if (event.first == Action::A || event.first == Action::Close) {
         _open = false;
-    if (action == Action::LShift)
-        _shift = true;
-    if (action == Action::Tab)
-        _tab = true;
-    if ((action == Action::Z || action == Action::Up) && _rotation != 180)
-        _rotation = 0;
-    if ((action == Action::S || action == Action::Down) && _rotation != 0)
-        _rotation = 180;
-    if ((action == Action::Q || action == Action::Left) && _rotation != 90)
-        _rotation = 270;
-    if ((action == Action::D || action == Action::Right) && _rotation != 270)
-        _rotation = 90;
+        return;
+    }
+    _events.push_back(event);
+    _tick++;
+    if (_tick != 10)
+        return;
+    _tick = 0;
+    for (auto myevent: _events) {
+        auto action = myevent.first;
+        if (action == Action::LShift)
+            _shift = true;
+        if (action == Action::Tab)
+            _tab = true;
+        if ((action == Action::Z || action == Action::Up) && _rotation != 180)
+            _rotation = 0;
+        if ((action == Action::S || action == Action::Down) && _rotation != 0)
+            _rotation = 180;
+        if ((action == Action::Q || action == Action::Left) && _rotation != 90)
+            _rotation = 270;
+        if ((action == Action::D || action == Action::Right) && _rotation != 270)
+            _rotation = 90;
+    }
 
     if (_rotation == 0) {
         if (head >= GRIDX)

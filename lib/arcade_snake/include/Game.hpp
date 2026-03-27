@@ -39,6 +39,8 @@ namespace arc {
             static const Assets _assets;
             int _apple;
             int _rotation;
+            std::size_t _tick;
+            std::vector<Event> _events;
             std::vector<std::size_t> _snake;
             float _eat = false;
             bool _open = true;

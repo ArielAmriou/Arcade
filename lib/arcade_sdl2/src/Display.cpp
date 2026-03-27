@@ -101,7 +101,7 @@ void arc::Display::drawGame(std::reference_wrapper<
         Mix_PlayChannel(-1, _musics[idx], loop);
     }
     SDL_RenderPresent(_renderer);
-    SDL_Delay(1000 / 5);
+    SDL_Delay(1000 / 60);
 }
 
 void arc::Display::freeAsset()
