@@ -13,20 +13,14 @@ set(SRCS_SDL2
 )
 
 set(SHARED
-    ../include/Shared/
+    ../../include/Shared/
 )
 
 add_library(${SDL2} SHARED ${SRCS_SDL2})
 target_include_directories(${SDL2} PRIVATE ${SHARED} ${SDL2}/include/)
 target_link_libraries(${SDL2} SDL2 SDL2_image SDL2_mixer)
 
-set(SNAKE
-    arcade_snake
+add_custom_target(move ALL
+    DEPENDS ${SDL2}
+    COMMAND mv lib*.so ../
 )
-
-set(SRCS_SNAKE
-    ${SNAKE}/src/Game.cpp
-)
-
-add_library(${SNAKE} SHARED ${SRCS_SNAKE})
-target_include_directories(${SNAKE} PRIVATE ${SHARED} ${SNAKE}/include/)

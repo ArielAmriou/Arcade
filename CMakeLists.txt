@@ -21,6 +21,10 @@ set(HEADERS
 add_executable(arcade ${MAIN} ${SRCS})
 target_include_directories(arcade PRIVATE ${HEADERS})
 
+add_custom_target(core
+    DEPENDS arcade
+)
+
 find_library(CRITERION criterion REQUIRED)
 
 set(SRCS_TESTS
@@ -41,8 +45,12 @@ add_custom_target(tests_run
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-target_compile_options(arcade PRIVATE -fno-gnu-unique -O3)
+add_custom_target(graphicals ALL
+    COMMAND ${CMAKE_COMMAND} -Blib/graphicals -Slib/graphicals
+    COMMAND make -C lib/graphicals
+)
 
-add_custom_target(libs
-    COMMAND ${CMAKE_COMMAND} --build lib/
+add_custom_target(games ALL
+    COMMAND ${CMAKE_COMMAND} -Blib/games -Slib/games
+    COMMAND make -C lib/games
 )
