@@ -9,3 +9,4 @@ Testing
 log.bin
 bonus/bonus
 rom.bin
+lib/lib*.so

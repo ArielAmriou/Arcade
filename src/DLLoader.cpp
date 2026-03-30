@@ -12,7 +12,8 @@ arc::DLLoader::DLLoader(const std::string &path) {
 }
 
 arc::DLLoader::~DLLoader() {
-    dlclose(_handle);
+    if (_handle != nullptr)
+        dlclose(_handle);
 }
 
 arc::ILibrary *arc::DLLoader::getInstance() {
