@@ -10,3 +10,6 @@ log.bin
 bonus/bonus
 rom.bin
 lib/lib*.so
+cmake-build-debug
+.idea/
+.vscode/
