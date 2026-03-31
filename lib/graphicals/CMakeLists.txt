@@ -20,7 +20,27 @@ add_library(${SDL2} SHARED ${SRCS_SDL2})
 target_include_directories(${SDL2} PRIVATE ${SHARED} ${SDL2}/include/)
 target_link_libraries(${SDL2} SDL2 SDL2_image SDL2_mixer)
 
+set(NCURSES
+        arcade_ncurses
+)
+
+set(SRCS_NCURSES
+        ${NCURSES}/src/DisplayNcurses.cpp
+        arcade_ncurses/src/DisplayNcurses.cpp
+        arcade_ncurses/src/DisplayNcurses.cpp
+)
+
+set(SHARED
+        ../../include/Shared/
+)
+
+add_library(${NCURSES} SHARED ${SRCS_NCURSES}
+        arcade_ncurses/src/DisplayNcurses.cpp)
+target_include_directories(${NCURSES} PRIVATE ${SHARED} ${NCURSES}/include/)
+target_link_libraries(${NCURSES} ncurses)
+
 add_custom_target(move ALL
-    DEPENDS ${SDL2}
+    DEPENDS ${SDL2} ${NCURSES}
     COMMAND mv lib*.so ../
 )
+

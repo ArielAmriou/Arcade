@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "arcade",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "arcade_ncurses::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-arcade_ncurses-Debug-2b98c3568544a41dfad4.json",
+					"name" : "arcade_ncurses",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "arcade_sdl2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-arcade_sdl2-Debug-4053713c445d8c284912.json",
+					"name" : "arcade_sdl2",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "move::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-move-Debug-74445fc10936885f4744.json",
+					"name" : "move",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/antoine/TEK2/Arcade/lib/graphicals/cmake-build-debug",
+		"source" : "/home/antoine/TEK2/Arcade/lib/graphicals"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}
