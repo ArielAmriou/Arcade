@@ -19,7 +19,7 @@ int main(const int ac, const char **av)
         arc::Core core(av[1]);
         core.play();
     } catch (const arc::exceptions::NotGraphical &e) {
-        arc::Core::help();
+        arc::Core::help(av[1]);
         return EPIERROR;
     } catch (const arc::exceptions::LibraryLoadError &e) {
         std::cerr << e.what() << std::endl;

@@ -24,7 +24,7 @@ namespace arc {
             ~Core() = default;
             void play();
 
-            static void help() noexcept;
+            static void help(const std::string &path) noexcept;
             void loadGameModule(const std::string &,
                 const std::exception &e=arc::exceptions::LibraryLoadError());
             void loadDisplayModule(const std::string &,
