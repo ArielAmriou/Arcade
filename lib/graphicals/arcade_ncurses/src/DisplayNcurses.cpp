@@ -11,6 +11,12 @@
 #include <iostream>
 
 namespace arc {
+    const std::unordered_map<int, arc::Action> arc::DisplayNcurses::_mouseButtonMap = {
+        {BUTTON1_PRESSED, Action::LeftMouse},
+        {BUTTON2_PRESSED, Action::MiddleMouse},
+        {BUTTON3_PRESSED, Action::RightMouse},
+    };
+
     const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
         {ERR, Action::None},
         {'a', Action::A},
@@ -134,12 +140,18 @@ namespace arc {
         const auto tmp = _keyMap.find(getInput);
         MEVENT eventMouse = {0};
 
-        getmouse(&eventMouse);
+        if (getmouse(&eventMouse) == ERR) {
+            std::cerr << "Error : couldn't get mouse events." << std::endl;
+            return value;
+        }
+        const auto button_pressed = _mouseButtonMap.find(eventMouse.bstate);
         mousePos.first = static_cast<float>(eventMouse.x);
         mousePos.second = static_cast<float>(eventMouse.y);
         if (tmp != _keyMap.end())
             value = {tmp->second, mousePos};
-        else
+        if (button_pressed != _mouseButtonMap.end())
+            value = {button_pressed->second, mousePos};
+        else if (button_pressed == _mouseButtonMap.end() && tmp == _keyMap.end())
             value = {Action::None, mousePos};
         return value;
     }

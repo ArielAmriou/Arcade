@@ -35,6 +35,7 @@ namespace arc {
         bool _quit = false;
         WINDOW* _window;
         std::vector<char> _assets;
+        static const std::unordered_map<int, Action> _mouseButtonMap;
         static const std::unordered_map<int, Action> _keyMap;
     };
 }
