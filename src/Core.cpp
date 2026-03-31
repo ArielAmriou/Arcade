@@ -54,8 +54,11 @@ void arc::Core::play() {
     }
 }
 
-void arc::Core::help(const std::string &path) noexcept {
-    std::cerr << "Error: '" + path + "' not a graphical library" << std::endl;
-    std::cerr << "Exit code: 84" << std::endl;
+void arc::Core::help() noexcept {
+    std::ifstream helpfile("src/help.txt");
+    std::string line;
+
+    while (std::getline(helpfile, line))
+        std::cerr << line << std::endl;
 }
 

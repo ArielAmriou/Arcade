@@ -6,6 +6,7 @@
 */
 
 #include "DLLoader.hpp"
+#include "Exceptions.hpp"
 
 arc::DLLoader::DLLoader(const std::string &path) {
     _handle = dlopen(path.data(), RTLD_LAZY);
@@ -18,9 +19,11 @@ arc::DLLoader::~DLLoader() {
 
 arc::ILibrary *arc::DLLoader::getInstance() {
     void *ret = dlsym(_handle, "makeInstance");
+    if (ret == nullptr)
+        throw arc::exceptions::NoEntryPoint();
     auto f = reinterpret_cast<ILibrary *(*)(void)>(ret);
     if (f == nullptr)
-        return nullptr;
+        throw arc::exceptions::NoEntryPoint();
     return f();
 }
 
