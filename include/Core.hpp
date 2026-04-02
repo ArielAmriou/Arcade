@@ -16,7 +16,7 @@
 #include "IGameModule.hpp"
 #include "Exceptions.hpp"
 
-#define DEFAULT_GAME_PATH "lib/libarcade_menu.so"
+#define DEFAULT_GAME_PATH "lib/arcade_menu.so"
 
 namespace arc {
     class Core {

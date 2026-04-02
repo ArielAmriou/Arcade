@@ -9,7 +9,7 @@ Testing
 log.bin
 bonus/bonus
 rom.bin
-lib/lib*.so
+lib/*.so
 cmake-build-debug
 .idea/
 .vscode/

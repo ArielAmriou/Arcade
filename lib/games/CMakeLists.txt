@@ -23,6 +23,7 @@ set(SRCS_SNAKE
 
 add_library(${SNAKE} SHARED ${SRCS_SNAKE} ${SRCS_SHARED})
 target_include_directories(${SNAKE} PRIVATE ${INCLUDE_SHARED} ${SNAKE}/include/)
+set_target_properties(${SNAKE} PROPERTIES PREFIX "")
 
 set(MENU
     arcade_menu
@@ -34,8 +35,9 @@ set(SRCS_MENU
 
 add_library(${MENU} SHARED ${SRCS_MENU} ${SRCS_SHARED})
 target_include_directories(${MENU} PRIVATE ${INCLUDE_SHARED} ${MENU}/include/)
+set_target_properties(${MENU} PROPERTIES PREFIX "")
 
 add_custom_target(move ALL
     DEPENDS ${SNAKE} ${MENU}
-    COMMAND mv lib*.so ../
+    COMMAND mv *.so ../
 )
