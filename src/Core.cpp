@@ -13,6 +13,10 @@
 #define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
 arc::Core::Core(const std::string &path): _loader(path) {
+    _commands[arc::Signal::LoadDisplay] = [this](std::vector<std::string> list) {loadDisplay(list);};
+    _commands[arc::Signal::LoadGame] = [this](std::vector<std::string> list) {loadGame(list);};
+    _commands[arc::Signal::RestartGame] = [this](std::vector<std::string> list) {restartGame(list);};
+    _commands[arc::Signal::BackToMenu] = [this](std::vector<std::string> list) {BackToMenu(list);};
     try {
         auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
         if (!disp.has_value())
@@ -47,16 +51,8 @@ void arc::Core::loadDisplayModule(const std::string &path, const std::exception 
 
 void arc::Core::execCommand(const std::vector<Command> commands)
 {
-    for (auto part: commands) {
-        auto command = part.first;
-        auto args = part.second;
-        if (command == Signal::LoadDisplay && !args.empty())
-            loadDisplayModule(args.front(), arc::exceptions::LibraryLoadError());
-        if (command == Signal::LoadGame && !args.empty())
-            loadGameModule(args.front(), arc::exceptions::LibraryLoadError());
-        if (command == Signal::RestartGame)
-            loadGameModule(_gamePath, arc::exceptions::LibraryLoadError());
-    }
+    for (auto part: commands)
+        _commands[part.first](part.second);
 }
 
 void arc::Core::play() {
@@ -80,3 +76,40 @@ void arc::Core::help() noexcept {
         std::cerr << line << std::endl;
 }
 
+void arc::Core::loadDisplay(std::vector<std::string> args)
+{
+    try {
+        if (args.size())
+            loadDisplayModule(args.front());
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
+
+void arc::Core::loadGame(std::vector<std::string> args)
+{
+    try {
+        if (args.size())
+            loadGameModule(args.front());
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
+
+void arc::Core::restartGame(std::vector<std::string>)
+{
+    try {
+        loadGameModule(_gamePath);
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
+
+void arc::Core::BackToMenu(std::vector<std::string>)
+{
+    try {
+        loadGameModule(DEFAULT_GAME_PATH);
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
