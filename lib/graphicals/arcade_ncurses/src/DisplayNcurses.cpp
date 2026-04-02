@@ -7,7 +7,6 @@
 
 #include <fstream>
 #include "DisplayNcurses.hpp"
-
 #include <iostream>
 
 namespace arc {
@@ -82,33 +81,34 @@ namespace arc {
         {'=', Action::Equal}
     };
 
-
-
-    // AJOUTER KEYPAD OPTION À LA WINDOW POUR HANDLE CERTAIN CARACTERES + les ajouter à la map de caracteres
-
     DisplayNcurses::~DisplayNcurses()
     {
         delwin(_window);
+        endwin();
     }
 
     DisplayNcurses::DisplayNcurses()
     {
         initscr();
-        cbreak();
+        nodelay(stdscr, TRUE);
         noecho();
+        cbreak();
         mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
         _window = newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0);
-        keypad(_window, true);
+        //keypad(_window, true); -> FIX KEYPAD
+        curs_set(0);
     }
 
     void DisplayNcurses::drawGame(std::reference_wrapper<std::pair<Entities, Sounds>> elements)
     {
-        timeout(100);
-        wrefresh(_window);
+        wclear(_window);
         for (const auto &entity: elements.get().first) {
             Vector2f pos = entity->getPos();
-            mvwprintw(_window, static_cast<int>(pos.first), static_cast<int>(pos.second), "%c", _assets.at(entity->getIdx()));
+            mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
+                static_cast<int>(pos.first * getmaxx(_window)), "%c",
+                _assets[entity->getIdx()]);
         }
+        wrefresh(_window);
     }
 
     int DisplayNcurses::setAssets(Assets assets)
@@ -116,7 +116,7 @@ namespace arc {
         char character;
 
         for (auto path: assets.first) {
-            path += ".txt";
+            path = "assets/" + path + ".txt";
             std::ifstream is_path_valid (path, std::ifstream::binary);
             if (!is_path_valid) {
                 std::cerr << "Error : " << path << " invalid path" << std::endl;
@@ -140,19 +140,18 @@ namespace arc {
         const auto tmp = _keyMap.find(getInput);
         MEVENT eventMouse = {0};
 
-        if (getmouse(&eventMouse) == ERR) {
-            std::cerr << "Error : couldn't get mouse events." << std::endl;
-            return value;
-        }
+        getmouse(&eventMouse);
         const auto button_pressed = _mouseButtonMap.find(eventMouse.bstate);
         mousePos.first = static_cast<float>(eventMouse.x);
         mousePos.second = static_cast<float>(eventMouse.y);
-        if (tmp != _keyMap.end())
+        if (tmp != _keyMap.end() && tmp != nullptr)
             value = {tmp->second, mousePos};
-        if (button_pressed != _mouseButtonMap.end())
+        if (button_pressed != _mouseButtonMap.end()) {
             value = {button_pressed->second, mousePos};
-        else if (button_pressed == _mouseButtonMap.end() && tmp == _keyMap.end())
+        }
+        else if (button_pressed == _mouseButtonMap.end() && tmp == _keyMap.end()) {
             value = {Action::None, mousePos};
+        }
         return value;
     }
 }
