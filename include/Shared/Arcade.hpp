@@ -22,6 +22,13 @@ namespace arc
     using Assets = std::pair<std::vector<std::string>,
         std::vector<std::string>>;
 
+    enum class LibType
+    {
+        None = -1,
+        Display = 0,
+        Game = 1,
+    };
+
     enum class Action
     {
         None,         //!< Unhandled key
@@ -143,7 +150,6 @@ namespace arc
         LoadGame,
         RestartGame,
         BackToMenu,
-        Quit,
     };
 
     using Command = std::pair<Signal, std::vector<std::string>>;

@@ -13,46 +13,46 @@
 #define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
 arc::Core::Core(const std::string &path): _loader(path) {
-    auto disp = _loader.makeInstance<IDisplayModule>();
-    if (!disp.has_value())
-        throw arc::exceptions::NotGraphical();
-    _display = std::unique_ptr<IDisplayModule>(disp.value().release());
+    _commands[arc::Signal::LoadDisplay] = [this](std::vector<std::string> list) {loadDisplay(list);};
+    _commands[arc::Signal::LoadGame] = [this](std::vector<std::string> list) {loadGame(list);};
+    _commands[arc::Signal::RestartGame] = [this](std::vector<std::string> list) {restartGame(list);};
+    _commands[arc::Signal::BackToMenu] = [this](std::vector<std::string> list) {BackToMenu(list);};
+    try {
+        auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
+        if (!disp.has_value())
+            throw arc::exceptions::NotGraphical();
+        disp.value().swap(_display);
 
-    _loader.reset(DEFAULT_GAME_PATH);
-    auto game = _loader.makeInstance<IGameModule>();
-    if (!game.has_value())
+        _loader.reset(DEFAULT_GAME_PATH);
+        auto game = _loader.makeInstance<IGameModule>(arc::LibType::Game);
+        if (!game.has_value())
+            throw arc::exceptions::LibraryLoadError();
+        game.value().swap(_game);
+    } catch (...) {
         throw arc::exceptions::LibraryLoadError();
-    _game = std::unique_ptr<IGameModule>(game.value().release());
+    }
 }
 
 void arc::Core::loadGameModule(const std::string &path, const std::exception &e) {
     _loader.reset(path);
-    auto game = _loader.makeInstance<IGameModule>();
+    auto game = _loader.makeInstance<IGameModule>(arc::LibType::Game);
     if (!game.has_value())
         throw e;
-    _game = std::unique_ptr<IGameModule>(game.value().release());
+    game.value().swap(_game);
 }
 
 void arc::Core::loadDisplayModule(const std::string &path, const std::exception &e) {
     _loader.reset(path);
-    auto game = _loader.makeInstance<IDisplayModule>();
-    if (!game.has_value())
+    auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
+    if (!disp.has_value())
         throw e;
-    _display = std::unique_ptr<IDisplayModule>(game.value().release());
+    disp.value().swap(_display);
 }
 
 void arc::Core::execCommand(const std::vector<Command> commands)
 {
-    for (auto part: commands) {
-        auto command = part.first;
-        auto args = part.second;
-        if (command == Signal::LoadDisplay && !args.empty())
-            loadDisplayModule(args.front(), arc::exceptions::LibraryLoadError());
-        if (command == Signal::LoadGame && !args.empty())
-            loadGameModule(args.front(), arc::exceptions::LibraryLoadError());
-        if (command == Signal::RestartGame)
-            loadGameModule(_gamePath, arc::exceptions::LibraryLoadError());
-    }
+    for (auto part: commands)
+        _commands[part.first](part.second);
 }
 
 void arc::Core::play() {
@@ -76,3 +76,40 @@ void arc::Core::help() noexcept {
         std::cerr << line << std::endl;
 }
 
+void arc::Core::loadDisplay(std::vector<std::string> args)
+{
+    try {
+        if (args.size())
+            loadDisplayModule(args.front());
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
+
+void arc::Core::loadGame(std::vector<std::string> args)
+{
+    try {
+        if (args.size())
+            loadGameModule(args.front());
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
+
+void arc::Core::restartGame(std::vector<std::string>)
+{
+    try {
+        loadGameModule(_gamePath);
+    } catch (const std::exception &e){
+        throw e;
+    }
+}
+
+void arc::Core::BackToMenu(std::vector<std::string>)
+{
+    try {
+        loadGameModule(DEFAULT_GAME_PATH);
+    } catch (const std::exception &e){
+        throw e;
+    }
+}

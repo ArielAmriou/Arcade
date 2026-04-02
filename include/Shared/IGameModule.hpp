@@ -12,11 +12,14 @@
 #include <memory>
 #include "IEntity.hpp"
 #include "ISound.hpp"
-#include "ILibrary.hpp"
 
 namespace arc {
 
-    class IGameModule: public ILibrary {
+    using SelectLibs = std::pair<std::optional<std::string>,
+        std::optional<std::string>>;
+    using Libs = std::pair<std::vector<std::string>, std::vector<std::string>>;
+
+    class IGameModule {
         public:
             virtual ~IGameModule() = default;
 
