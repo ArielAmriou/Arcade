@@ -25,10 +25,10 @@ namespace arc {
     using SDL_Entity =
         std::reference_wrapper<const std::unique_ptr<arc::IEntity>>;
 
-    class Display : public IDisplayModule {
+    class DisplaySDL2 : public IDisplayModule {
         public:
-            Display();
-            ~Display();
+            DisplaySDL2();
+            ~DisplaySDL2();
 
             Event getEvent() noexcept;
             int setAssets(const Assets assets) noexcept;

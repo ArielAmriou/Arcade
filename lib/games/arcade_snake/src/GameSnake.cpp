@@ -7,7 +7,7 @@
 
 #include <cstdlib> 
 #include <ctime> 
-#include "Game.hpp"
+#include "GameSnake.hpp"
 #include "Entity.hpp"
 #include "Sound.hpp"
 #include "IGameModule.hpp"
@@ -15,7 +15,7 @@
 #include <iostream>
 #define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
-arc::Game::Game() : _rotation(90), _tick(0)
+arc::GameSnake::GameSnake() : _rotation(90), _tick(0)
 {
     srand((unsigned)time(0));
     int head = rand() % SIZE;
@@ -38,7 +38,7 @@ arc::Game::Game() : _rotation(90), _tick(0)
     }
 }
 
-void arc::Game::simulate(const Event event) noexcept
+void arc::GameSnake::simulate(const Event event) noexcept
 {
     int head = _snake[0];
 
@@ -140,7 +140,7 @@ void arc::Game::simulate(const Event event) noexcept
         }
 }
 
-std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
+std::pair<arc::Entities, arc::Sounds> arc::GameSnake::getElements() noexcept
 {
     Entities entities;
     Sounds sounds;
@@ -166,7 +166,7 @@ std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
     return std::make_pair(std::move(entities), std::move(sounds));
 }
 
-std::vector<arc::Command> arc::Game::loadCommand() noexcept
+std::vector<arc::Command> arc::GameSnake::loadCommand() noexcept
 {
     std::vector<Command> cpy(_commands);
 
@@ -174,7 +174,7 @@ std::vector<arc::Command> arc::Game::loadCommand() noexcept
     return cpy;
 }
 
-const std::pair<std::vector<std::string>, std::vector<std::string>> arc::Game::_assets = {
+const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameSnake::_assets = {
     {
         "assets/snake/loan",
         "assets/snake/ariel",
@@ -188,7 +188,7 @@ extern "C"
 {
     std::unique_ptr<arc::IGameModule> makeInstance()
     {
-        return std::make_unique<arc::Game>();
+        return std::make_unique<arc::GameSnake>();
     }
     arc::LibType getLibType()
     {

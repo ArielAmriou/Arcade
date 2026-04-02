@@ -18,7 +18,7 @@ set(SNAKE
 )
 
 set(SRCS_SNAKE
-    ${SNAKE}/src/Game.cpp
+    ${SNAKE}/src/GameSnake.cpp
 )
 
 add_library(${SNAKE} SHARED ${SRCS_SNAKE} ${SRCS_SHARED})
@@ -29,14 +29,13 @@ set(MENU
 )
 
 set(SRCS_MENU
-    ${MENU}/src/Game.cpp
+    ${MENU}/src/GameMenu.cpp
 )
 
 add_library(${MENU} SHARED ${SRCS_MENU} ${SRCS_SHARED})
 target_include_directories(${MENU} PRIVATE ${INCLUDE_SHARED} ${MENU}/include/)
 
 add_custom_target(move ALL
-    DEPENDS ${SNAKE}
-    DEPENDS ${MENU}
+    DEPENDS ${SNAKE} ${MENU}
     COMMAND mv lib*.so ../
 )

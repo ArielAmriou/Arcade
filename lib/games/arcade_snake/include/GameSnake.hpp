@@ -18,10 +18,10 @@ namespace arc {
     constexpr int GRIDY = 9;
     constexpr int SIZE = GRIDX * GRIDY;
 
-    class Game : public IGameModule {
+    class GameSnake : public IGameModule {
         public:
-            Game();
-            ~Game() {};
+            GameSnake();
+            ~GameSnake() {};
 
             enum class Box {
                 None,

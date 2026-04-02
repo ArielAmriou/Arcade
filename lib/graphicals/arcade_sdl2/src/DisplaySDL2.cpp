@@ -8,9 +8,9 @@
 #include <iostream>
 #define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
-#include "Display.hpp"
+#include "DisplaySDL2.hpp"
 
-arc::Display::Display()
+arc::DisplaySDL2::DisplaySDL2()
 {
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
@@ -23,7 +23,7 @@ arc::Display::Display()
     _font = TTF_OpenFont("assets/SDL2/font.ttf", 25);
 }
 
-arc::Display::~Display()
+arc::DisplaySDL2::~DisplaySDL2()
 {
     freeAsset();
     SDL_DestroyRenderer(_renderer);
@@ -33,7 +33,7 @@ arc::Display::~Display()
     SDL_Quit();
 }
 
-arc::Event arc::Display::getEvent() noexcept
+arc::Event arc::DisplaySDL2::getEvent() noexcept
 {
     int x = 0;
     int y = 0;
@@ -58,7 +58,7 @@ arc::Event arc::Display::getEvent() noexcept
     return value;
 }
 
-int arc::Display::setAssets(const Assets assets) noexcept
+int arc::DisplaySDL2::setAssets(const Assets assets) noexcept
 {
     freeAsset();
     for (auto path: assets.first) {
@@ -86,7 +86,7 @@ int arc::Display::setAssets(const Assets assets) noexcept
     return 0;
 }
 
-void arc::Display::drawText(
+void arc::DisplaySDL2::drawText(
     SDL_Rect rect, SDL_Color color, std::string str, float rotation)
 {
     SDL_Surface *surface = TTF_RenderText_Solid(_font, str.c_str(), color); 
@@ -98,7 +98,7 @@ void arc::Display::drawText(
     SDL_DestroyTexture(message);
 }
 
-void arc::Display::drawImage(
+void arc::DisplaySDL2::drawImage(
     SDL_Rect rect, SDL_Color color, int idx, float rotation)
 {
     SDL_SetTextureColorMod(_images[idx].second, color.a, color.g, color.b);
@@ -109,7 +109,7 @@ void arc::Display::drawImage(
     SDL_SetTextureAlphaMod(_images[idx].second, WHITE.a);
 }
 
-void arc::Display::drawEntity(
+void arc::DisplaySDL2::drawEntity(
     SDL_Entity element, SDL_Rect rect, SDL_Color color)
 {
     auto &entity = element.get();
@@ -125,7 +125,7 @@ void arc::Display::drawEntity(
     }
 }
 
-void arc::Display::drawGame(const std::pair<Entities, Sounds> elements) noexcept
+void arc::DisplaySDL2::drawGame(const std::pair<Entities, Sounds> elements) noexcept
 {
     SDL_SetRenderDrawColor(_renderer, WHITE.r, WHITE.g, WHITE.b, WHITE.a);
     SDL_RenderClear(_renderer);
@@ -150,7 +150,7 @@ void arc::Display::drawGame(const std::pair<Entities, Sounds> elements) noexcept
     SDL_Delay(1000 / 60);
 }
 
-void arc::Display::freeAsset()
+void arc::DisplaySDL2::freeAsset()
 {
     for (auto image: _images) {
         SDL_DestroyTexture(image.second);
@@ -164,7 +164,7 @@ void arc::Display::freeAsset()
     _musics.clear();
 }
 
-const std::unordered_map<SDL_Keycode, arc::Action> arc::Display::_keyMap = {
+const std::unordered_map<SDL_Keycode, arc::Action> arc::DisplaySDL2::_keyMap = {
     {SDLK_UNKNOWN, Action::None},
     {SDLK_a, Action::A},
     {SDLK_b, Action::B},
@@ -270,7 +270,7 @@ const std::unordered_map<SDL_Keycode, arc::Action> arc::Display::_keyMap = {
     {SDLK_RSHIFT, Action::RShift},
 };
 
-const std::unordered_map<int, arc::Action> arc::Display::_mouseButtonMap = {
+const std::unordered_map<int, arc::Action> arc::DisplaySDL2::_mouseButtonMap = {
     {SDL_BUTTON_LEFT, Action::LeftMouse},
     {SDL_BUTTON_MIDDLE, Action::MiddleMouse},
     {SDL_BUTTON_RIGHT, Action::RightMouse},
@@ -280,7 +280,7 @@ extern "C"
 {
     std::unique_ptr<arc::IDisplayModule> makeInstance()
     {
-        return std::make_unique<arc::Display>();
+        return std::make_unique<arc::DisplaySDL2>();
     }
     arc::LibType getLibType()
     {

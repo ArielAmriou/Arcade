@@ -9,7 +9,7 @@ set(SDL2
 )
 
 set(SRCS_SDL2
-    ${SDL2}/src/Display.cpp
+    ${SDL2}/src/DisplaySDL2.cpp
 )
 
 set(SHARED
@@ -26,16 +26,14 @@ set(NCURSES
 
 set(SRCS_NCURSES
         ${NCURSES}/src/DisplayNcurses.cpp
-        arcade_ncurses/src/DisplayNcurses.cpp
-        arcade_ncurses/src/DisplayNcurses.cpp
 )
 
 set(SHARED
         ../../include/Shared/
 )
 
-add_library(${NCURSES} SHARED ${SRCS_NCURSES}
-        arcade_ncurses/src/DisplayNcurses.cpp)
+add_library(${NCURSES} SHARED ${SRCS_NCURSES})
+
 target_include_directories(${NCURSES} PRIVATE ${SHARED} ${NCURSES}/include/)
 target_link_libraries(${NCURSES} ncurses)
 

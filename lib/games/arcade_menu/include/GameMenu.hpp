@@ -12,10 +12,10 @@
 #include "IGameModule.hpp"
 
 namespace arc {
-    class Game : public IGameModule {
+    class GameMenu : public IGameModule {
         public:
-            Game() {};
-            ~Game() {};
+            GameMenu() {};
+            ~GameMenu() {};
 
             void simulate(const Event) noexcept;
             Assets getAssets() noexcept {return _assets;}

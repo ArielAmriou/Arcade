@@ -5,11 +5,11 @@
 ** Game
 */
 
-#include "Game.hpp"
+#include "GameMenu.hpp"
 #include "Entity.hpp"
 #include "Sound.hpp"
 
-void arc::Game::simulate(const Event event) noexcept
+void arc::GameMenu::simulate(const Event event) noexcept
 {
     if (event.first == Action::Enter) {
         std::vector<std::string> args;
@@ -19,7 +19,7 @@ void arc::Game::simulate(const Event event) noexcept
     }
 }
 
-std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
+std::pair<arc::Entities, arc::Sounds> arc::GameMenu::getElements() noexcept
 {
     Entities entities;
     Sounds sounds;
@@ -32,7 +32,7 @@ std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
     return std::make_pair(std::move(entities), std::move(sounds));
 }
 
-std::vector<arc::Command> arc::Game::loadCommand() noexcept
+std::vector<arc::Command> arc::GameMenu::loadCommand() noexcept
 {
     std::vector<Command> cpy(_commands);
 
@@ -40,7 +40,7 @@ std::vector<arc::Command> arc::Game::loadCommand() noexcept
     return cpy;
 }
 
-const std::pair<std::vector<std::string>, std::vector<std::string>> arc::Game::_assets = {
+const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameMenu::_assets = {
     {
 
     }, {
@@ -52,7 +52,7 @@ extern "C"
 {
     std::unique_ptr<arc::IGameModule> makeInstance()
     {
-        return std::make_unique<arc::Game>();
+        return std::make_unique<arc::GameMenu>();
     }
     arc::LibType getLibType()
     {
