@@ -16,12 +16,14 @@
 
 namespace arc {
 
-    constexpr RGBA WHITE = std::make_tuple(255, 255, 255, 255);  
+    constexpr RGBA WHITE = std::make_tuple(255, 255, 255, 255);
 
     class Entity : public IEntity {
         public:
             Entity(int idx, Vector2f pos, Vector2f size, float rotation)
                 : _idx(idx), _pos(pos), _size(size), _rotation(rotation) {};
+            Entity(int idx, Vector2f pos, Vector2f size, float rotation, std::string str)
+                : _idx(idx), _pos(pos), _size(size), _rotation(rotation), _str(str) {};
             ~Entity() {};
 
             int getIdx() noexcept {return _idx;}

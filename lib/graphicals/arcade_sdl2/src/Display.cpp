@@ -62,7 +62,7 @@ int arc::Display::setAssets(const Assets assets) noexcept
 {
     freeAsset();
     for (auto path: assets.first) {
-        path = "assets/" + path + ".png";
+        path += ".png";
         SDL_Surface *image = IMG_Load(path.c_str());
         if (!image) {
             std::cerr << "IMG_Load failed for '" << path << "': " << IMG_GetError() << std::endl;
@@ -76,7 +76,7 @@ int arc::Display::setAssets(const Assets assets) noexcept
         _images.push_back({image, texture});
     }
     for (auto path: assets.second) {
-        Mix_Chunk *music = Mix_LoadWAV(std::string("assets/" + path).c_str());
+        Mix_Chunk *music = Mix_LoadWAV(std::string(path).c_str());
         if (!music)  {
             std::cerr << "Mix_LoadMUS failed for '" << path << "': " << Mix_GetError() << std::endl;
             return -1;

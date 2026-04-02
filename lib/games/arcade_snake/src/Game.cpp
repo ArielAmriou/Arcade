@@ -177,11 +177,11 @@ std::vector<arc::Command> arc::Game::loadCommand() noexcept
 
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::Game::_assets = {
     {
-        "loan",
-        "ariel",
+        "assets/snake/loan",
+        "assets/snake/ariel",
     }, {
-        "background.wav",
-        "pickUp.wav"
+        "assets/snake/background.wav",
+        "assets/snake/pickUp.wav"
     }
 };
 
