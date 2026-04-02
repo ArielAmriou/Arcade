@@ -161,10 +161,12 @@ const std::pair<std::vector<std::string>, std::vector<std::string>> arc::Game::_
 
 extern "C"
 {
-
-    arc::ILibrary *makeInstance()
+    std::unique_ptr<arc::IGameModule> makeInstance()
     {
-        return new arc::Game();
+        return std::make_unique<arc::Game>();
     }
-
+    arc::LibType getLibType()
+    {
+        return arc::LibType::Game;
+    }
 }

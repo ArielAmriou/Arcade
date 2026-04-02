@@ -147,10 +147,12 @@ namespace arc {
 
 extern "C"
 {
-
-    arc::ILibrary *makeInstance()
+    std::unique_ptr<arc::IDisplayModule> makeInstance()
     {
-        return new arc::DisplayNcurses();
+        return std::make_unique<arc::DisplayNcurses>();
     }
-
+    arc::LibType getLibType()
+    {
+        return arc::LibType::Display;
+    }
 }

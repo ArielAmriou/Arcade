@@ -12,7 +12,6 @@
 #include <memory>
 #include "IEntity.hpp"
 #include "ISound.hpp"
-#include "ILibrary.hpp"
 
 namespace arc {
 
@@ -20,7 +19,7 @@ namespace arc {
         std::optional<std::string>>;
     using Libs = std::pair<std::vector<std::string>, std::vector<std::string>>;
 
-    class IGameModule: public ILibrary {
+    class IGameModule {
         public:
             virtual ~IGameModule() = default;
 

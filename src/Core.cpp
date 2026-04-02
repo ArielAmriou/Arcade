@@ -13,32 +13,36 @@
 #define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
 arc::Core::Core(const std::string &path): _loader(path) {
-    auto disp = _loader.makeInstance<IDisplayModule>();
-    if (!disp.has_value())
-        throw arc::exceptions::NotGraphical();
-    _display = std::unique_ptr<IDisplayModule>(disp.value().release());
+    try {
+        auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
+        if (!disp.has_value())
+            throw arc::exceptions::NotGraphical();
+        disp.value().swap(_display);
 
-    _loader.reset(DEFAULT_GAME_PATH);
-    auto game = _loader.makeInstance<IGameModule>();
-    if (!game.has_value())
+        _loader.reset(DEFAULT_GAME_PATH);
+        auto game = _loader.makeInstance<IGameModule>(arc::LibType::Game);
+        if (!game.has_value())
+            throw arc::exceptions::LibraryLoadError();
+        game.value().swap(_game);
+    } catch (...) {
         throw arc::exceptions::LibraryLoadError();
-    _game = std::unique_ptr<IGameModule>(game.value().release());
+    }
 }
 
 void arc::Core::loadGameModule(const std::string &path, const std::exception &e) {
     _loader.reset(path);
-    auto game = _loader.makeInstance<IGameModule>();
+    auto game = _loader.makeInstance<IGameModule>(arc::LibType::Game);
     if (!game.has_value())
         throw e;
-    _game = std::unique_ptr<IGameModule>(game.value().release());
+    game.value().swap(_game);
 }
 
 void arc::Core::loadDisplayModule(const std::string &path, const std::exception &e) {
     _loader.reset(path);
-    auto game = _loader.makeInstance<IDisplayModule>();
-    if (!game.has_value())
+    auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
+    if (!disp.has_value())
         throw e;
-    _display = std::unique_ptr<IDisplayModule>(game.value().release());
+    disp.value().swap(_display);
 }
 
 void arc::Core::play() {

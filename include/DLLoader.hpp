@@ -15,13 +15,12 @@
 #include <string>
 #include <optional>
 #include <memory>
-#include "ILibrary.hpp"
+#include "Arcade.hpp"
+#include "Exceptions.hpp"
+#include <iostream>
 
 namespace arc {
     class DLLoader;
-
-    template<typename T>
-    concept BaseILibrary = std::is_base_of<ILibrary, T>::value;
 
     class DLLoader {
         public:
@@ -30,24 +29,26 @@ namespace arc {
 
             void reset(const std::string &path);
 
-            template<BaseILibrary T>
-            std::optional<std::unique_ptr<T>> makeInstance() {
-                auto tmp = dynamic_cast<T *>(getInstance());
-                if (tmp == nullptr)
+            template<typename T>
+            [[nodiscard]] std::optional<std::unique_ptr<T>> makeInstance(arc::LibType expected) {
+                void *symbol = dlsym(_handle, "getLibType");
+                auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
+                if (getLibType == nullptr || getLibType() != expected)
                     return {};
-                std::unique_ptr<T> obj(tmp);
-                return obj;
-            }
 
-            template<BaseILibrary T>
-            bool isType() {
-                return makeInstance<T>().has_value();
+                symbol = dlsym(_handle, "makeInstance");
+                if (symbol == nullptr)
+                    throw arc::exceptions::NoEntryPoint();
+                auto makeInstance = reinterpret_cast<std::unique_ptr<T> (*)(void)>(symbol);
+                if (makeInstance == nullptr)
+                    throw arc::exceptions::LibraryLoadError();
+                auto tmp = makeInstance();
+                if (tmp == nullptr)
+                    throw arc::exceptions::NoEntryPoint();
+                return tmp;
             }
-
         private:
             void *_handle = nullptr;
-        
-            ILibrary *getInstance();
     };
 
 }

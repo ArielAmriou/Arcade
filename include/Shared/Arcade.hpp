@@ -22,6 +22,13 @@ namespace arc
     using Assets = std::pair<std::vector<std::string>,
         std::vector<std::string>>;
 
+    enum class LibType
+    {
+        None = -1,
+        Display = 0,
+        Game = 1,
+    };
+
     enum class Action
     {
         None = -1,    //!< Unhandled key

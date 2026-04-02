@@ -231,10 +231,12 @@ const std::unordered_map<int, arc::Action> arc::Display::_mouseButtonMap = {
 
 extern "C"
 {
-
-    arc::ILibrary *makeInstance()
+    std::unique_ptr<arc::IDisplayModule> makeInstance()
     {
-        return new arc::Display();
+        return std::make_unique<arc::Display>();
     }
-
+    arc::LibType getLibType()
+    {
+        return arc::LibType::Display;
+    }
 }

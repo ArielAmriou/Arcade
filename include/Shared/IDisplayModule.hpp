@@ -15,10 +15,9 @@
 #include "Arcade.hpp"
 #include "IEntity.hpp"
 #include "ISound.hpp"
-#include "ILibrary.hpp"
 
 namespace arc {
-    class IDisplayModule: public ILibrary {
+    class IDisplayModule {
         public:
             virtual ~IDisplayModule() = default;
 
