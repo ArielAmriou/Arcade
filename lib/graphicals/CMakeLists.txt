@@ -18,7 +18,7 @@ set(SHARED
 
 add_library(${SDL2} SHARED ${SRCS_SDL2})
 target_include_directories(${SDL2} PRIVATE ${SHARED} ${SDL2}/include/)
-target_link_libraries(${SDL2} SDL2 SDL2_image SDL2_mixer)
+target_link_libraries(${SDL2} SDL2 SDL2_image SDL2_mixer SDL2_ttf)
 
 set(NCURSES
         arcade_ncurses
