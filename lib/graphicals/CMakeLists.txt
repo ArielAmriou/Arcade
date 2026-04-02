@@ -27,7 +27,6 @@ set(NCURSES
 set(SRCS_NCURSES
         ${NCURSES}/src/DisplayNcurses.cpp
         arcade_ncurses/src/DisplayNcurses.cpp
-        arcade_ncurses/src/DisplayNcurses.cpp
 )
 
 set(SHARED

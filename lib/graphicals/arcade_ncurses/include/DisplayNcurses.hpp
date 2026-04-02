@@ -14,6 +14,7 @@
 
 #define ERROR (-1)
 #define SUCCES 0
+#define FRAMERATE (1000000/30)
 #define ESC_CHARACTER (-27)
 #define DOWN_ARROW 0x42
 #define UP_ARROW 0x41
@@ -35,7 +36,7 @@ namespace arc {
         bool _quit = false;
         WINDOW* _window;
         std::vector<char> _assets;
-        static const std::unordered_map<int, Action> _mouseButtonMap;
+        static const std::unordered_map<mmask_t, Action> _mouseButtonMapNcurses;
         static const std::unordered_map<int, Action> _keyMap;
     };
 }

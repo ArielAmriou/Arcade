@@ -8,12 +8,13 @@
 #include <fstream>
 #include "DisplayNcurses.hpp"
 #include <iostream>
+#include<unistd.h>
 
 namespace arc {
-    const std::unordered_map<int, arc::Action> arc::DisplayNcurses::_mouseButtonMap = {
+    const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMapNcurses = {
         {BUTTON1_PRESSED, Action::LeftMouse},
-        {BUTTON2_PRESSED, Action::MiddleMouse},
-        {BUTTON3_PRESSED, Action::RightMouse},
+        {BUTTON2_RELEASED, Action::MiddleMouse},
+        {BUTTON3_RELEASED, Action::RightMouse},
     };
 
     const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
@@ -69,10 +70,10 @@ namespace arc {
         {'.', Action::Period},
         {'/', Action::Slash},
         {'`', Action::Hyphen},
-        {RIGHT_ARROW, Action::Right},
-        {LEFT_ARROW, Action::Left},
-        {DOWN_ARROW, Action::Down},
-        {UP_ARROW, Action::Up},
+        {KEY_RIGHT, Action::Right},
+        {KEY_LEFT, Action::Left},
+        {KEY_DOWN, Action::Down},
+        {KEY_UP, Action::Up},
         {'/', Action::Divide},
         {'*', Action::Multiply},
         {'-', Action::Subtract},
@@ -90,17 +91,19 @@ namespace arc {
     DisplayNcurses::DisplayNcurses()
     {
         initscr();
-        nodelay(stdscr, TRUE);
         noecho();
         cbreak();
         mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
+        mouseinterval(0);
         _window = newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0);
-        //keypad(_window, true); -> FIX KEYPAD
+        nodelay(_window, TRUE);
+        keypad(_window, TRUE);
         curs_set(0);
     }
 
     void DisplayNcurses::drawGame(std::reference_wrapper<std::pair<Entities, Sounds>> elements)
     {
+        usleep(FRAMERATE);
         wclear(_window);
         for (const auto &entity: elements.get().first) {
             Vector2f pos = entity->getPos();
@@ -115,6 +118,7 @@ namespace arc {
     {
         char character;
 
+        _assets.clear();
         for (auto path: assets.first) {
             path = "assets/" + path + ".txt";
             std::ifstream is_path_valid (path, std::ifstream::binary);
@@ -134,25 +138,29 @@ namespace arc {
 
     Event DisplayNcurses::getEvent()
     {
+        std::ofstream MyFile("filename.txt", std::ios::app);
         const int getInput = wgetch(_window);
         Vector2f mousePos = {0, 0};
-        Event value{Action::None, mousePos};
-        const auto tmp = _keyMap.find(getInput);
+        const auto key = _keyMap.find(getInput);
         MEVENT eventMouse = {0};
 
-        getmouse(&eventMouse);
-        const auto button_pressed = _mouseButtonMap.find(eventMouse.bstate);
-        mousePos.first = static_cast<float>(eventMouse.x);
-        mousePos.second = static_cast<float>(eventMouse.y);
-        if (tmp != _keyMap.end() && tmp != nullptr)
-            value = {tmp->second, mousePos};
-        if (button_pressed != _mouseButtonMap.end()) {
-            value = {button_pressed->second, mousePos};
+        MyFile << "be4 if !" << std::endl;
+        MyFile << "getInput = " << getInput << " (KEY_MOUSE = " << KEY_MOUSE << ")" << std::endl;
+        if (getInput == KEY_MOUSE && getmouse(&eventMouse) == OK) {
+            MyFile << "if !" << std::endl;
+            mousePos.first  = static_cast<float>(eventMouse.x) / getmaxx(_window);
+            mousePos.second = static_cast<float>(eventMouse.y) / getmaxy(_window);
+            const auto buttonPressed = _mouseButtonMapNcurses.find(eventMouse.bstate);
+                MyFile << "before! bstate : " << eventMouse.bstate << std::endl;
+                if (buttonPressed != _mouseButtonMapNcurses.end()) {
+                    MyFile << "inside! bstate : " << eventMouse.bstate << std::endl;
+                    return {buttonPressed->second, mousePos};
+            }
+            MyFile << "Ooooh dang it! bstate : " << eventMouse.bstate << std::endl;
         }
-        else if (button_pressed == _mouseButtonMap.end() && tmp == _keyMap.end()) {
-            value = {Action::None, mousePos};
-        }
-        return value;
+        if (key != _keyMap.end())
+            return {key->second, mousePos};
+        return {Action::None, mousePos};
     }
 }
 
