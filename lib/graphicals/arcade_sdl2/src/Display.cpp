@@ -15,10 +15,12 @@ arc::Display::Display()
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_WAVPACK);
+    TTF_Init();
     _window = SDL_CreateWindow("SDL2 Displaying Image", SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED, WINX, WINY, 0);
     _renderer = SDL_CreateRenderer(_window, -1, 0);
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+    _font = TTF_OpenFont("assets/SDL2/font.ttf", 25);
 }
 
 arc::Display::~Display()
@@ -36,7 +38,7 @@ arc::Event arc::Display::getEvent() noexcept
     int x = 0;
     int y = 0;
     SDL_GetGlobalMouseState(&x, &y);
-    Vector2f pos = {x, y};
+    Vector2f pos = {x / WINX, y / WINY};
     Event value = {Action::None, pos};
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
@@ -84,15 +86,60 @@ int arc::Display::setAssets(const Assets assets) noexcept
     return 0;
 }
 
+void arc::Display::drawText(
+    SDL_Rect rect, SDL_Color color, std::string str, float rotation)
+{
+    SDL_Surface *surface = TTF_RenderText_Solid(_font, str.c_str(), color); 
+    SDL_Texture *message = SDL_CreateTextureFromSurface(_renderer, surface);
+
+    SDL_RenderCopyEx(_renderer, message, NULL, &rect,
+        rotation, NULL, SDL_FLIP_NONE);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(message);
+}
+
+void arc::Display::drawImage(
+    SDL_Rect rect, SDL_Color color, int idx, float rotation)
+{
+    SDL_SetTextureColorMod(_images[idx].second, color.a, color.g, color.b);
+    SDL_SetTextureAlphaMod(_images[idx].second, color.a);
+    SDL_RenderCopyEx(_renderer, _images[idx].second, NULL, &rect,
+        rotation, NULL, SDL_FLIP_NONE);
+    SDL_SetTextureColorMod(_images[idx].second, WHITE.a, WHITE.g, WHITE.b);
+    SDL_SetTextureAlphaMod(_images[idx].second, WHITE.a);
+}
+
+void arc::Display::drawEntity(
+    SDL_Entity element, SDL_Rect rect, SDL_Color color)
+{
+    auto &entity = element.get();
+
+    if (entity->getIdx() >= 0 && entity->getIdx() < _images.size()) {
+        drawImage(rect, color, entity->getIdx(), entity->getRotation());
+    } else if (entity->getStr().has_value())
+        drawText(rect, color, entity->getStr().value(), entity->getRotation());
+    else {
+        SDL_SetRenderDrawColor(_renderer, color.r,
+            color.g, color.b, color.a);
+        SDL_RenderFillRect(_renderer, &rect);
+    }
+}
+
 void arc::Display::drawGame(const std::pair<Entities, Sounds> elements) noexcept
 {
-    SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(_renderer, WHITE.r, WHITE.g, WHITE.b, WHITE.a);
     SDL_RenderClear(_renderer);
     for (auto &entity: elements.first) {
         Vector2f pos = entity->getPos();
         Vector2f size = entity->getSize();
-        SDL_Rect rect = {static_cast<int>(pos.first * WINX), static_cast<int>(pos.second * WINY), static_cast<int>(size.first * WINX), static_cast<int>(size.second * WINY)};
-        SDL_RenderCopyEx(_renderer, _images[entity->getIdx()].second, NULL, &rect, entity->getRotation(), NULL, SDL_FLIP_NONE);
+        SDL_Rect rect = {static_cast<int>(pos.first * WINX),
+            static_cast<int>(pos.second * WINY),
+            static_cast<int>(size.first * WINX),
+            static_cast<int>(size.second * WINY)};
+        SDL_Color color = {std::get<0>(entity->getColor()),
+            std::get<1>(entity->getColor()), std::get<2>(entity->getColor()),
+            std::get<3>(entity->getColor())};
+        drawEntity(entity, rect, color);
     }
     for (auto& sound : elements.second) {
         int idx = sound->getIdx();
