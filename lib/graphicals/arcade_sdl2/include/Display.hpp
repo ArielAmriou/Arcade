@@ -25,9 +25,9 @@ namespace arc {
             Display();
             ~Display();
 
-            Event getEvent();
-            int setAssets(Assets assets);
-            void drawGame(std::reference_wrapper<std::pair<Entities, Sounds>>);
+            Event getEvent() noexcept;
+            int setAssets(const Assets assets) noexcept;
+            void drawGame(const std::pair<Entities, Sounds>) noexcept;
 
             void freeAsset();
 

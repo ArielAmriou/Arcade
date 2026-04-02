@@ -45,6 +45,20 @@ void arc::Core::loadDisplayModule(const std::string &path, const std::exception 
     disp.value().swap(_display);
 }
 
+void arc::Core::execCommand(const std::vector<Command> commands)
+{
+    for (auto part: commands) {
+        auto command = part.first;
+        auto args = part.second;
+        if (command == Signal::LoadDisplay && !args.empty())
+            loadDisplayModule(args.front(), arc::exceptions::LibraryLoadError());
+        if (command == Signal::LoadGame && !args.empty())
+            loadGameModule(args.front(), arc::exceptions::LibraryLoadError());
+        if (command == Signal::RestartGame)
+            loadGameModule(_gamePath, arc::exceptions::LibraryLoadError());
+    }
+}
+
 void arc::Core::play() {
     Event event = {arc::Action::None, {0, 0}};
 
@@ -52,9 +66,9 @@ void arc::Core::play() {
     _display->setAssets(assets);
     while (event.first != arc::Action::Close) {
         event = _display->getEvent();
-        auto elements = _game->getElements();
         _game->simulate(event);
-        _display->drawGame(elements);
+        _display->drawGame(_game->getElements());
+        execCommand(_game->loadCommand());
     }
 }
 

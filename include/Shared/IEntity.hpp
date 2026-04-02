@@ -24,12 +24,12 @@ namespace arc {
         public:
             virtual ~IEntity() = default;
             
-            virtual int getIdx() = 0;
-            virtual Vector2f getPos() = 0;
-            virtual Vector2f getSize() = 0;
-            virtual float getRotation() = 0;
-            virtual RGBA getColor() = 0;
-            virtual std::optional<std::string> getStr() = 0;
+            virtual int getIdx() noexcept = 0;
+            virtual Vector2f getPos() noexcept = 0;
+            virtual Vector2f getSize() noexcept = 0;
+            virtual float getRotation() noexcept = 0;
+            virtual RGBA getColor() noexcept = 0;
+            virtual std::optional<std::string> getStr() noexcept = 0;
     };
     
     using Entities = std::vector<std::unique_ptr<arc::IEntity>>;

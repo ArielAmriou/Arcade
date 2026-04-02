@@ -29,11 +29,11 @@ namespace arc {
                 Ilias,
             };
 
-            void simulate(Event);
-            Assets getAssets() {return _assets;}
-            std::pair<Entities, Sounds> getElements();
-            bool isOpen() {return _open;}
-            SelectLibs libChanges(Libs);
+            void simulate(const Event) noexcept;
+            Assets getAssets() noexcept {return _assets;}
+            std::pair<Entities, Sounds> getElements() noexcept;
+            bool isOpen() noexcept {return _open;}
+            std::vector<Command> loadCommand() noexcept;
 
         private:
             static const Assets _assets;
@@ -44,9 +44,9 @@ namespace arc {
             std::vector<std::size_t> _snake;
             float _eat = false;
             bool _open = true;
-            // SelectLibs _libsSelected = std::make_pair(std::nullopt, std::nullopt);
             bool _tab = false;
             bool _shift = false;
+            std::vector<Command> _commands;
     };
 }
 

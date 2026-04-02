@@ -17,8 +17,8 @@ namespace arc {
                 : _idx(idx), _loop(loop) {};
             ~Sound() {};
 
-            int getIdx() {return _idx;}
-            bool isLoop() {return _loop;}
+            int getIdx() noexcept {return _idx;}
+            bool isLoop() noexcept {return _loop;}
 
         private:
             int _idx;

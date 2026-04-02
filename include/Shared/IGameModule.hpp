@@ -23,11 +23,11 @@ namespace arc {
         public:
             virtual ~IGameModule() = default;
 
-            virtual void simulate(Event) = 0;
-            virtual Assets getAssets() = 0;
-            virtual std::pair<Entities, Sounds> getElements() = 0;
-            virtual bool isOpen() = 0;
-            virtual SelectLibs libChanges(Libs) = 0;
+            virtual void simulate(const Event) noexcept = 0;
+            virtual Assets getAssets() noexcept = 0;
+            virtual std::pair<Entities, Sounds> getElements() noexcept = 0;
+            virtual bool isOpen() noexcept = 0;
+            virtual std::vector<Command> loadCommand() noexcept = 0;
     };
 }
 

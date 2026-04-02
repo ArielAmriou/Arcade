@@ -95,17 +95,17 @@ namespace arc {
         keypad(_window, true);
     }
 
-    void DisplayNcurses::drawGame(std::reference_wrapper<std::pair<Entities, Sounds>> elements)
+    void DisplayNcurses::drawGame(const std::pair<Entities, Sounds> elements) noexcept
     {
         timeout(100);
         wrefresh(_window);
-        for (const auto &entity: elements.get().first) {
+        for (const auto &entity: elements.first) {
             Vector2f pos = entity->getPos();
-            mvwprintw(_window, static_cast<int>(pos.first), static_cast<int>(pos.second), "%c", _assets.at(entity->getIdx()));
+            mvwprintw(_window, static_cast<int>(pos.first), static_cast<int>(pos.second), "%c", _assets[entity->getIdx()]);
         }
     }
 
-    int DisplayNcurses::setAssets(Assets assets)
+    int DisplayNcurses::setAssets(const Assets assets) noexcept
     {
         char character;
 
@@ -126,7 +126,7 @@ namespace arc {
         return SUCCES;
     }
 
-    Event DisplayNcurses::getEvent()
+    Event DisplayNcurses::getEvent() noexcept
     {
         const int getInput = wgetch(_window);
         Vector2f mousePos = {0, 0};

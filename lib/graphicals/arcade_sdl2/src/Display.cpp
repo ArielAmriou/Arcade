@@ -31,7 +31,7 @@ arc::Display::~Display()
     SDL_Quit();
 }
 
-arc::Event arc::Display::getEvent()
+arc::Event arc::Display::getEvent() noexcept
 {
     int x = 0;
     int y = 0;
@@ -56,7 +56,7 @@ arc::Event arc::Display::getEvent()
     return value;
 }
 
-int arc::Display::setAssets(Assets assets)
+int arc::Display::setAssets(const Assets assets) noexcept
 {
     freeAsset();
     for (auto path: assets.first) {
@@ -84,18 +84,17 @@ int arc::Display::setAssets(Assets assets)
     return 0;
 }
 
-void arc::Display::drawGame(std::reference_wrapper<
-                std::pair<Entities, Sounds>> elements)
+void arc::Display::drawGame(const std::pair<Entities, Sounds> elements) noexcept
 {
     SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
     SDL_RenderClear(_renderer);
-    for (auto &entity: elements.get().first) {
+    for (auto &entity: elements.first) {
         Vector2f pos = entity->getPos();
         Vector2f size = entity->getSize();
         SDL_Rect rect = {static_cast<int>(pos.first * WINX), static_cast<int>(pos.second * WINY), static_cast<int>(size.first * WINX), static_cast<int>(size.second * WINY)};
         SDL_RenderCopyEx(_renderer, _images[entity->getIdx()].second, NULL, &rect, entity->getRotation(), NULL, SDL_FLIP_NONE);
     }
-    for (auto& sound : elements.get().second) {
+    for (auto& sound : elements.second) {
         int idx = sound->getIdx();
         int loop = sound->isLoop() ? -1 : 0;
         Mix_PlayChannel(-1, _musics[idx], loop);
@@ -157,16 +156,16 @@ const std::unordered_map<SDL_Keycode, arc::Action> arc::Display::_keyMap = {
     {SDLK_0, Action::Num0},
     {SDLK_RETURN, Action::Enter},
     {SDLK_ESCAPE, Action::Escape},
-    {SDLK_BACKSPACE, Action::BackSpace},
+    {SDLK_BACKSPACE, Action::Backspace},
     {SDLK_TAB, Action::Tab},
     {SDLK_SPACE, Action::Space},
     {SDLK_MINUS, Action::Subtract},
     {SDLK_EQUALS, Action::Equal},
     {SDLK_LEFTBRACKET, Action::LBracket},
     {SDLK_RIGHTBRACKET, Action::RBracket},
-    {SDLK_BACKSLASH, Action::BackSlash},
-    {SDLK_SEMICOLON, Action::SemiColon},
-    {SDLK_QUOTE, Action::Quote},
+    {SDLK_BACKSLASH, Action::Backslash},
+    {SDLK_SEMICOLON, Action::Semicolon},
+    {SDLK_QUOTE, Action::Apostrophe},
     {SDLK_COMMA, Action::Comma},
     {SDLK_PERIOD, Action::Period},
     {SDLK_SLASH, Action::Slash},
