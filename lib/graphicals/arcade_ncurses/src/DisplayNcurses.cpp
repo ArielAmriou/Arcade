@@ -8,9 +8,10 @@
 #include <fstream>
 #include "DisplayNcurses.hpp"
 #include <iostream>
+#include<unistd.h>
 
 namespace arc {
-    const std::unordered_map<int, arc::Action> arc::DisplayNcurses::_mouseButtonMap = {
+    const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMap = {
         {BUTTON1_PRESSED, Action::LeftMouse},
         {BUTTON2_PRESSED, Action::MiddleMouse},
         {BUTTON3_PRESSED, Action::RightMouse},
@@ -69,10 +70,10 @@ namespace arc {
         {'.', Action::Period},
         {'/', Action::Slash},
         {'`', Action::Hyphen},
-        {RIGHT_ARROW, Action::Right},
-        {LEFT_ARROW, Action::Left},
-        {DOWN_ARROW, Action::Down},
-        {UP_ARROW, Action::Up},
+        {KEY_RIGHT, Action::Right},
+        {KEY_LEFT, Action::Left},
+        {KEY_DOWN, Action::Down},
+        {KEY_UP, Action::Up},
         {'/', Action::Divide},
         {'*', Action::Multiply},
         {'-', Action::Subtract},
@@ -90,22 +91,23 @@ namespace arc {
     DisplayNcurses::DisplayNcurses()
     {
         initscr();
-        nodelay(stdscr, TRUE);
         noecho();
         cbreak();
         mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
         _window = newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0);
-        //keypad(_window, true); -> FIX KEYPAD
+        nodelay(_window, TRUE);
+        keypad(_window, true);
         curs_set(0);
     }
 
     void DisplayNcurses::drawGame(std::reference_wrapper<std::pair<Entities, Sounds>> elements)
     {
+        usleep(FRAMERATE);
         wclear(_window);
         for (const auto &entity: elements.get().first) {
             Vector2f pos = entity->getPos();
-            mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
-                static_cast<int>(pos.first * getmaxx(_window)), "%c",
+            mvwprintw(_window, static_cast<int>(pos.second) * getmaxy(_window),
+                static_cast<int>(pos.first) * getmaxx(_window), "%c",
                 _assets[entity->getIdx()]);
         }
         wrefresh(_window);
@@ -134,25 +136,24 @@ namespace arc {
 
     Event DisplayNcurses::getEvent()
     {
+        std::ofstream MyFile("kaka.txt");
         const int getInput = wgetch(_window);
         Vector2f mousePos = {0, 0};
-        Event value{Action::None, mousePos};
         const auto tmp = _keyMap.find(getInput);
         MEVENT eventMouse = {0};
 
-        getmouse(&eventMouse);
-        const auto button_pressed = _mouseButtonMap.find(eventMouse.bstate);
         mousePos.first = static_cast<float>(eventMouse.x);
         mousePos.second = static_cast<float>(eventMouse.y);
-        if (tmp != _keyMap.end() && tmp != nullptr)
-            value = {tmp->second, mousePos};
-        if (button_pressed != _mouseButtonMap.end()) {
-            value = {button_pressed->second, mousePos};
+        if (tmp != _keyMap.end())
+            return {tmp->second, mousePos};
+        if (getInput == KEY_MOUSE && getmouse(&eventMouse) == OK) {
+            const auto button_pressed = _mouseButtonMap.find(eventMouse.bstate);
+            if (button_pressed != _mouseButtonMap.end()) {
+                std::cerr << "Ouais le rap" << std::endl;
+                return {button_pressed->second, mousePos};
+            }
         }
-        else if (button_pressed == _mouseButtonMap.end() && tmp == _keyMap.end()) {
-            value = {Action::None, mousePos};
-        }
-        return value;
+        return {Action::None, mousePos};;
     }
 }
 
