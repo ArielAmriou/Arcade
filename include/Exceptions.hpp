@@ -24,6 +24,10 @@ namespace arc {
                 const char* what() const throw() { return "Unexpected error while loading library"; }
         };
 
+        class NoEntryPoint : public std::exception {
+            public:
+                const char* what() const throw() { return "No entry point in dynamic library"; }
+        };
     }
 
 }

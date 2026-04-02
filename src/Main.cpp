@@ -12,17 +12,23 @@
 
 int main(const int ac, const char **av)
 {
-    if (ac != 2)
-        return EPIERROR;
-    
-    try {
-        arc::Core core(av[1]);
-        core.play();
-    } catch (const arc::exceptions::NotGraphical &e) {
+    int status = SUCCESS;
+
+    if (ac != 2) {
         arc::Core::help();
-        return EPIERROR;
-    } catch (const arc::exceptions::LibraryLoadError &e) {
-        std::cerr << e.what() << std::endl;
-        return EPIERROR;
+        status = EPIERROR;
+    } else {
+        try {
+            arc::Core core(av[1]);
+            core.play();
+        } catch (const arc::exceptions::NotGraphical &e) {
+            std::cerr << "Error: '" << av[1] << "' not a graphical library" << std::endl;
+            std::cerr << "Exit code: 84" << std::endl;
+            status = EPIERROR;
+        } catch (const arc::exceptions::LibraryLoadError &e) {
+            std::cerr << e.what() << std::endl;
+            status = EPIERROR;
+        }
     }
+    return status;
 }

@@ -156,3 +156,13 @@ namespace arc {
         return value;
     }
 }
+
+extern "C"
+{
+
+    arc::ILibrary *makeInstance()
+    {
+        return new arc::DisplayNcurses();
+    }
+
+}
