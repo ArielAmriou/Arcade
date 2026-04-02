@@ -11,7 +11,7 @@
 #include<unistd.h>
 
 namespace arc {
-    const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMapNcurses = {
+    const std::unordered_map<int, arc::Action> arc::DisplayNcurses::_mouseButtonMap = {
         {BUTTON1_PRESSED, Action::LeftMouse},
         {BUTTON2_RELEASED, Action::MiddleMouse},
         {BUTTON3_RELEASED, Action::RightMouse},
