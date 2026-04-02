@@ -47,6 +47,7 @@ namespace arc {
             bool _tab = false;
             bool _shift = false;
             std::vector<Command> _commands;
+            bool _loadBackground = true;
     };
 }
 

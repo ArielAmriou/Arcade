@@ -160,6 +160,7 @@ void arc::Display::freeAsset()
     for (auto music: _musics) {
         Mix_FreeChunk(music);
     }
+    Mix_HaltChannel(-1);
     _musics.clear();
 }
 

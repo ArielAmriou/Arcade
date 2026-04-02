@@ -47,7 +47,7 @@ void arc::Game::simulate(const Event event) noexcept
         return;
     }
     if (event.first == Action::Enter) {
-        std::vector<std::string> args; 
+        std::vector<std::string> args;
         _commands.push_back(std::make_pair(Signal::RestartGame, args));
         return;
     }
@@ -144,7 +144,6 @@ std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
 {
     Entities entities;
     Sounds sounds;
-    static bool first = true;
 
     float rotation = _rotation;
     for (auto snake: _snake) {
@@ -154,10 +153,10 @@ std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
     }
     Entity tmp(1, {(float)(_apple % GRIDX) / GRIDX, (_apple - (float)(_apple % GRIDX)) / GRIDX / GRIDY}, {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
     entities.push_back(std::make_unique<arc::Entity>(tmp));
-    Sound background(0, true);
-    if (first) {
+    if (_loadBackground) {
+        Sound background(0, true);
         sounds.push_back(std::make_unique<arc::Sound>(background));
-        first = false;
+        _loadBackground = false;
     }
     if (_eat) {
         Sound pickUp(1, false);

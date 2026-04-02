@@ -24,7 +24,19 @@ set(SRCS_SNAKE
 add_library(${SNAKE} SHARED ${SRCS_SNAKE} ${SRCS_SHARED})
 target_include_directories(${SNAKE} PRIVATE ${INCLUDE_SHARED} ${SNAKE}/include/)
 
+set(MENU
+    arcade_menu
+)
+
+set(SRCS_MENU
+    ${MENU}/src/Game.cpp
+)
+
+add_library(${MENU} SHARED ${SRCS_MENU} ${SRCS_SHARED})
+target_include_directories(${MENU} PRIVATE ${INCLUDE_SHARED} ${MENU}/include/)
+
 add_custom_target(move ALL
     DEPENDS ${SNAKE}
+    DEPENDS ${MENU}
     COMMAND mv lib*.so ../
 )
