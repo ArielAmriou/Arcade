@@ -59,7 +59,8 @@ void arc::Core::play() {
     Event event = {arc::Action::None, {0, 0}};
 
     auto assets = _game->getAssets();
-    _display->setAssets(assets);
+    if (_display->setAssets(assets) == -1)
+        return;
     while (event.first != arc::Action::Close) {
         event = _display->getEvent();
         _game->simulate(event);

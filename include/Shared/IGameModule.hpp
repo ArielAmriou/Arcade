@@ -24,10 +24,10 @@ namespace arc {
             virtual ~IGameModule() = default;
 
             virtual void simulate(const Event) noexcept = 0;
-            virtual Assets getAssets() noexcept = 0;
-            virtual std::pair<Entities, Sounds> getElements() noexcept = 0;
-            virtual bool isOpen() noexcept = 0;
-            virtual std::vector<Command> loadCommand() noexcept = 0;
+            [[nodiscard]] virtual Assets getAssets() noexcept = 0;
+            [[nodiscard]] virtual std::pair<Entities, Sounds> getElements() noexcept = 0;
+            [[nodiscard]] virtual bool isOpen() noexcept = 0;
+            [[nodiscard]] virtual std::vector<Command> loadCommand() noexcept = 0;
     };
 }
 
