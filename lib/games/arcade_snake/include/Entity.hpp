@@ -24,12 +24,12 @@ namespace arc {
                 : _idx(idx), _pos(pos), _size(size), _rotation(rotation) {};
             ~Entity() {};
 
-            int getIdx() {return _idx;}
-            Vector2f getPos() {return _pos;}
-            Vector2f getSize() {return _size;}
-            float getRotation() {return _rotation;}
-            RGBA getColor() {return _color;}
-            std::optional<std::string> getStr() {return _str;}
+            int getIdx() noexcept {return _idx;}
+            Vector2f getPos() noexcept {return _pos;}
+            Vector2f getSize() noexcept {return _size;}
+            float getRotation() noexcept {return _rotation;}
+            RGBA getColor() noexcept {return _color;}
+            std::optional<std::string> getStr() noexcept {return _str;}
             
         private:
             int _idx;

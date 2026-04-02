@@ -29,10 +29,13 @@ namespace arc {
                 const std::exception &e=arc::exceptions::LibraryLoadError());
             void loadDisplayModule(const std::string &,
                 const std::exception &e=arc::exceptions::LibraryLoadError());
+            void execCommand(const std::vector<Command>);
+        
         private:
             DLLoader _loader;
             std::unique_ptr<IGameModule> _game;
             std::unique_ptr<IDisplayModule> _display;
+            std::string _gamePath = DEFAULT_GAME_PATH;
     };
 }
 

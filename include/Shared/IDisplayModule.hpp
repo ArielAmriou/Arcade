@@ -22,10 +22,9 @@ namespace arc {
         public:
             virtual ~IDisplayModule() = default;
 
-            virtual Event getEvent() = 0;
-            virtual int setAssets(Assets) = 0;
-            virtual void drawGame(std::reference_wrapper<
-                std::pair<Entities, Sounds>>) = 0;
+            virtual Event getEvent() noexcept = 0;
+            virtual int setAssets(const Assets) noexcept = 0;
+            virtual void drawGame(const std::pair<Entities, Sounds>) noexcept = 0;
     };
 }
 

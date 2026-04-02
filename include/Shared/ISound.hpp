@@ -16,8 +16,8 @@ namespace arc {
         public:
             virtual ~ISound() = default;
 
-            virtual int getIdx() = 0;
-            virtual bool isLoop() = 0;
+            virtual int getIdx() noexcept = 0;
+            virtual bool isLoop() noexcept = 0;
     };
 
     using Sounds = std::vector<std::unique_ptr<arc::ISound>>;

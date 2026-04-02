@@ -38,12 +38,17 @@ arc::Game::Game() : _rotation(90), _tick(0)
     }
 }
 
-void arc::Game::simulate(Event event)
+void arc::Game::simulate(const Event event) noexcept
 {
     int head = _snake[0];
 
     if (event.first == Action::A || event.first == Action::Close) {
         _open = false;
+        return;
+    }
+    if (event.first == Action::Enter) {
+        std::vector<std::string> args; 
+        _commands.push_back(std::make_pair(Signal::RestartGame, args));
         return;
     }
     _events.push_back(event);
@@ -70,18 +75,38 @@ void arc::Game::simulate(Event event)
     if (_rotation == 0) {
         if (head >= GRIDX)
             head -= GRIDX;
+        else {
+            std::vector<std::string> args; 
+            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            return;
+        }
     }
     if (_rotation == 90) {
         if (head % GRIDX != GRIDX - 1)
             head += 1;
+        else {
+            std::vector<std::string> args; 
+            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            return;
+        }
     }
     if (_rotation == 180) {
         if (head < SIZE - GRIDX)
             head += GRIDX;
+        else {
+            std::vector<std::string> args; 
+            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            return;
+        }
     }
     if (_rotation == 270) {
         if (head % GRIDX != 0)
             head -= 1;
+        else {
+            std::vector<std::string> args; 
+            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            return;
+        }
     }
 
     int tail = _snake.back();
@@ -106,9 +131,16 @@ void arc::Game::simulate(Event event)
             }
         }
     }
+
+    for (std::size_t i = 1; i < _snake.size(); i++)
+        if (_snake[0] == _snake[i]) {
+            std::vector<std::string> args; 
+            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            return;
+        }
 }
 
-std::pair<arc::Entities, arc::Sounds> arc::Game::getElements()
+std::pair<arc::Entities, arc::Sounds> arc::Game::getElements() noexcept
 {
     Entities entities;
     Sounds sounds;
@@ -135,18 +167,12 @@ std::pair<arc::Entities, arc::Sounds> arc::Game::getElements()
     return std::make_pair(std::move(entities), std::move(sounds));
 }
 
-arc::SelectLibs arc::Game::libChanges(Libs libs)
+std::vector<arc::Command> arc::Game::loadCommand() noexcept
 {
-    SelectLibs selectLibs;
-    if (_tab) {
-        _tab = false;
-        selectLibs.first = libs.first.front();
-    }
-    if (_shift) {
-        _shift = false;
-        selectLibs.second = libs.second.front();
-    }
-    return selectLibs;
+    std::vector<Command> cpy(_commands);
+
+    _commands.clear();
+    return cpy;
 }
 
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::Game::_assets = {
