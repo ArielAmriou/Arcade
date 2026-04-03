@@ -1,0 +1,238 @@
+/*
+** EPITECH PROJECT, 2026
+** Arcade
+** File description:
+** Game
+*/
+
+#include <filesystem>
+#include <string>
+#include "DLLoader.hpp"
+#include "GameMenu.hpp"
+#include "Entity.hpp"
+#include "Sound.hpp"
+
+arc::GameMenu::GameMenu()
+{
+    _splitLibs = splitLibs(getLibsPath());
+}
+
+void arc::GameMenu::simulate(const Event event) noexcept
+{
+    if (event.first == Action::Enter) {
+        // std::vector<std::string> displayArgs;
+        // displayArgs.push_back(_splitLibs.first[_idxs.first]);
+        // _commands.push_back(std::make_pair(Signal::LoadDisplay, displayArgs));
+        std::vector<std::string> gameArgs;
+        gameArgs.push_back(_splitLibs.second[_idxs.second]);
+        _commands.push_back(std::make_pair(Signal::LoadGame, gameArgs));
+        return;
+    }
+    if (event.first == Action::Right) {
+        if (_selectLibType == _libType.size() - 1)
+            _selectLibType = 0;
+        else
+            _selectLibType++;
+    }
+    if (event.first == Action::Left) {
+        if (_selectLibType == 0)
+            _selectLibType = _libType.size() - 1;
+        else
+            _selectLibType--;
+    }
+    if (_libType[_selectLibType] == LibType::Display)
+        changeSelectLib(event.first, _splitLibs.first.size(), _idxs.first);
+    else if (_libType[_selectLibType] == LibType::Game)
+        changeSelectLib(event.first, _splitLibs.second.size(), _idxs.second);
+    else {
+        if (_letter.find(event.first) != _letter.end()) {
+            std::string c = _letter.find(event.first)->second;
+            auto pos = _name.find("_");
+            if (pos != std::string::npos)
+                _name.replace(pos, 1, c);
+        }
+        if (event.first == Action::Backspace) {
+            auto pos = _name.find("_");
+            if (pos != std::string::npos && pos != 0)
+                _name.replace(pos - 1, 1, "_");
+            if (pos == std::string::npos) {
+                _name.replace(_name.size() - 1, 1, "_");
+            }
+        }
+
+    }
+}
+
+std::pair<arc::Entities, arc::Sounds> arc::GameMenu::getElements() noexcept
+{
+    Entities entities;
+    Sounds sounds;
+
+    std::vector<RGBA> selectLibsColor;
+    for (std::size_t i = 0; i < _libType.size(); i++) {
+        if (i == _selectLibType)
+            selectLibsColor.push_back(RED);
+        else
+            selectLibsColor.push_back(WHITE);
+    }
+    Entity title(-1, {0.4, 0.05}, {0.2, 0.1}, "Arcade", WHITE);
+    entities.push_back(std::make_unique<arc::Entity>(title));
+    Entity display(-1, {0.05, 0.2}, {0.25, 0.075}, formatLen("Display", 15), selectLibsColor[0]);
+    entities.push_back(std::make_unique<arc::Entity>(display));
+    Entity game(-1, {0.375, 0.2}, {0.25, 0.075}, formatLen("Game", 15), selectLibsColor[1]);
+    entities.push_back(std::make_unique<arc::Entity>(game));
+    showNLibs(_splitLibs.first, 0.05, 4, _idxs.first, entities);
+    showNLibs(_splitLibs.second, 0.375, 4, _idxs.second, entities);
+
+    Entity name(-1, {0.7, 0.2}, {0.25, 0.075}, formatLen("NAME", 15), selectLibsColor[2]);
+    entities.push_back(std::make_unique<arc::Entity>(name));
+    Entity user_name(-1, {0.7, 0.3}, {0.25, 0.075}, formatLen(_name, 15), WHITE);
+    entities.push_back(std::make_unique<arc::Entity>(user_name));
+    if (_loadBackground) {
+        Sound background(0, true);
+        sounds.push_back(std::make_unique<arc::Sound>(background));
+        _loadBackground = false;
+    }
+    return std::make_pair(std::move(entities), std::move(sounds));
+}
+
+std::vector<arc::Command> arc::GameMenu::loadCommand() noexcept
+{
+    std::vector<Command> cpy(_commands);
+
+    _commands.clear();
+    return cpy;
+}
+
+std::string arc::GameMenu::formatPath(std::string str)
+{
+    std::string format(str);
+    size_t pos = format.find(LIBPATH);
+    if (pos != std::string::npos)
+        format.replace(pos, LIBPATH.length() - pos, "\0");
+    pos = format.find(LIBEXT);
+    if (pos != std::string::npos)
+        format.replace(pos, LIBEXT.length() - pos, "\0");
+    return format;
+}
+std::string arc::GameMenu::formatLen(std::string str, std::size_t len)
+{
+    std::string format(str);
+    if (format.size() >= len)
+        return format;
+    size_t add = (len - format.size()) / 2;
+    for (size_t i = 0; i < add; i++)
+        format = " " + format + " ";
+    return format;
+}
+
+void arc::GameMenu::changeSelectLib(Action action, std::size_t size, std::reference_wrapper<std::size_t> idx)
+{
+    if (action == Action::Down) {
+        if (size - 1 == idx.get())
+            idx.get() = 0;
+        else
+            idx.get()++;
+    }
+    if (action == Action::Up) {
+        if (0 == idx.get())
+            idx.get() = size - 1;
+        else
+            idx.get()--;
+    }
+}
+
+void arc::GameMenu::showNLibs(std::vector<std::string> list, float posx, size_t n,
+    size_t idx, std::reference_wrapper<Entities> entities)
+{
+    auto start = idx;
+    if (list.size() < n) {
+        n = list.size();
+        start = 0;
+    }
+    if (list.size() - idx < n) {
+        start = list.size() - n;
+    }
+    for (size_t i = start; i < n + start; i++) {
+        auto str = formatLen(formatPath(list[i]), LIBMAXSIZE);
+        RGBA color = idx == i ? BLUE : WHITE; 
+        Entity entity(-1, {posx, 0.3 + (0.075 * (i - start))}, {0.25, 0.05}, str, color);
+        entities.get().push_back(std::make_unique<arc::Entity>(entity));
+    }
+}
+
+std::vector<std::string> arc::GameMenu::getLibsPath()
+{
+    std::vector<std::string> list;
+
+    for (auto &entry : std::filesystem::directory_iterator(LIBDIR)) {
+        std::string path = entry.path().string();
+        if (path.starts_with(LIBPATH) && path.ends_with(LIBEXT)) {
+            list.push_back(path);
+        }
+    }
+    return list;
+}
+
+arc::SplitLibs arc::GameMenu::splitLibs(std::vector<std::string> libs)
+{
+    SplitLibs split;
+
+    for (auto lib: libs) {
+        DLLoader loader(lib);
+        if (loader.getLibType() == LibType::Display)
+            split.first.push_back(lib);
+        else
+            split.second.push_back(lib);
+    }
+    return split;
+}
+
+const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameMenu::_assets = {
+    {
+
+    }, {
+        "assets/menu/background.wav",
+    }
+};
+
+const std::unordered_map<arc::Action, std::string> arc::GameMenu::_letter = {
+    {Action::A, "A"},
+    {Action::B, "B"},
+    {Action::C, "C"},
+    {Action::D, "D"},
+    {Action::E, "E"},
+    {Action::F, "F"},
+    {Action::G, "G"},
+    {Action::H, "H"},
+    {Action::I, "I"},
+    {Action::J, "J"},
+    {Action::K, "K"},
+    {Action::L, "L"},
+    {Action::M, "M"},
+    {Action::N, "N"},
+    {Action::O, "O"},
+    {Action::P, "P"},
+    {Action::Q, "Q"},
+    {Action::R, "R"},
+    {Action::S, "S"},
+    {Action::T, "T"},
+    {Action::U, "U"},
+    {Action::V, "V"},
+    {Action::W, "W"},
+    {Action::X, "X"},
+    {Action::Y, "Y"},
+    {Action::Z, "Z"},
+};
+
+extern "C"
+{
+    std::unique_ptr<arc::IGameModule> makeInstance()
+    {
+        return std::make_unique<arc::GameMenu>();
+    }
+    arc::LibType getLibType()
+    {
+        return arc::LibType::Game;
+    }
+}

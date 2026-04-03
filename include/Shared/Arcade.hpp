@@ -21,11 +21,20 @@ namespace arc
     using Vector2f = std::pair<float, float>;
     using Assets = std::pair<std::vector<std::string>,
         std::vector<std::string>>;
+    using SplitLibs = std::pair<std::vector<std::string>,
+        std::vector<std::string>>;
+
+    enum class LibType
+    {
+        None,
+        Display,
+        Game,
+    };
 
     enum class Action
     {
-        None = -1,    //!< Unhandled key
-        A = 0,        //!< The A key
+        None,         //!< Unhandled key
+        A,            //!< The A key
         B,            //!< The B key
         C,            //!< The C key
         D,            //!< The D key
@@ -134,17 +143,18 @@ namespace arc
         Close,        //!< The Close Button
 
         ActionCount,     //!< Keep last -- the total number of keyboard keys
-
-        Tilde     = Grave,     //!<\deprecated Use Grave instead
-        Dash      = Hyphen,    //!<\deprecated Use Hyphen instead
-        BackSpace = Backspace, //!<\deprecated Use Backspace instead
-        BackSlash = Backslash, //!<\deprecated Use Backslash instead
-        SemiColon = Semicolon, //!<\deprecated Use Semicolon instead
-        Return    = Enter,     //!<\deprecated Use Enter instead
-        Quote     = Apostrophe //!<\deprecated Use Apostrophe instead
     };
 
     using Event = std::pair<Action, Vector2f>;
+
+    enum class Signal {
+        LoadDisplay,
+        LoadGame,
+        RestartGame,
+        BackToMenu,
+    };
+
+    using Command = std::pair<Signal, std::vector<std::string>>;
 }
 
 #endif

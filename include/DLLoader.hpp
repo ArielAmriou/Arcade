@@ -15,39 +15,43 @@
 #include <string>
 #include <optional>
 #include <memory>
-#include "ILibrary.hpp"
+#include "Arcade.hpp"
+#include "Exceptions.hpp"
+#include <iostream>
 
 namespace arc {
-    class DLLoader;
-
-    template<typename T>
-    concept BaseILibrary = std::is_base_of<ILibrary, T>::value;
-
     class DLLoader {
         public:
-            DLLoader(const std::string &path);
+            DLLoader() noexcept = default;
+            DLLoader(const std::string &path) noexcept;
             ~DLLoader();
 
-            void reset(const std::string &path);
+            void reset(const std::string &path) noexcept;
 
-            template<BaseILibrary T>
-            std::optional<std::unique_ptr<T>> makeInstance() {
-                auto tmp = dynamic_cast<T *>(getInstance());
-                if (tmp == nullptr)
+            template<typename T>
+            [[nodiscard]] std::optional<std::unique_ptr<T>> makeInstance(arc::LibType expected) {
+                if (_handle == nullptr)
                     return {};
-                std::unique_ptr<T> obj(tmp);
-                return obj;
+                void *symbol = dlsym(_handle, "getLibType");
+                auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
+                if (getLibType == nullptr || getLibType() != expected)
+                    return {};
+
+                symbol = dlsym(_handle, "makeInstance");
+                if (symbol == nullptr)
+                    throw arc::exceptions::NoEntryPoint();
+                auto makeInstance = reinterpret_cast<std::unique_ptr<T> (*)(void)>(symbol);
+                if (makeInstance == nullptr)
+                    throw arc::exceptions::LibraryLoadError();
+                auto tmp = makeInstance();
+                if (tmp == nullptr)
+                    throw arc::exceptions::NoEntryPoint();
+                return tmp;
             }
 
-            template<BaseILibrary T>
-            bool isType() {
-                return makeInstance<T>().has_value();
-            }
-
+            [[nodiscard]] arc::LibType getLibType();
         private:
             void *_handle = nullptr;
-        
-            ILibrary *getInstance();
     };
 
 }

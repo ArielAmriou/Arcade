@@ -104,7 +104,7 @@ namespace arc {
         curs_set(0);
     }
 
-    void DisplayNcurses::drawGame(std::reference_wrapper<std::pair<Entities, Sounds>> elements)
+    void DisplayNcurses::drawGame(const std::pair<Entities, Sounds> elements) noexcept
     {
         usleep(FRAMERATE);
         wclear(_window);
@@ -117,7 +117,7 @@ namespace arc {
         wrefresh(_window);
     }
 
-    int DisplayNcurses::setAssets(Assets assets)
+    int DisplayNcurses::setAssets(const Assets assets) noexcept
     {
         std::string asset;
 
@@ -140,7 +140,7 @@ namespace arc {
         return SUCCES;
     }
 
-    Event DisplayNcurses::getEvent()
+    Event DisplayNcurses::getEvent() noexcept
     {
         std::ofstream MyFile("filename.txt", std::ios::app);
         const int getInput = wgetch(_window);
@@ -166,10 +166,13 @@ namespace arc {
 
 extern "C"
 {
-
-    arc::ILibrary *makeInstance()
+    std::unique_ptr<arc::IDisplayModule> makeInstance()
     {
-        return new arc::DisplayNcurses();
+        return std::make_unique<arc::DisplayNcurses>();
+    }
+    arc::LibType getLibType()
+    {
+        return arc::LibType::Display;
     }
 
 }

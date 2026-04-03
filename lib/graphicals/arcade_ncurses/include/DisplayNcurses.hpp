@@ -28,9 +28,9 @@ namespace arc {
         DisplayNcurses();
         ~DisplayNcurses() override;
 
-        [[nodiscard]] Event getEvent() override;
-        int setAssets(Assets assets) override;
-        void drawGame(std::reference_wrapper<std::pair<Entities, Sounds>> elements) override;
+        [[nodiscard]] Event getEvent() noexcept;
+        int setAssets(const Assets assets) noexcept;
+        void drawGame(const std::pair<Entities, Sounds> elements) noexcept;
 
     private:
         bool _quit = false;

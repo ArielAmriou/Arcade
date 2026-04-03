@@ -12,7 +12,6 @@
 #include <memory>
 #include "IEntity.hpp"
 #include "ISound.hpp"
-#include "ILibrary.hpp"
 
 namespace arc {
 
@@ -20,15 +19,15 @@ namespace arc {
         std::optional<std::string>>;
     using Libs = std::pair<std::vector<std::string>, std::vector<std::string>>;
 
-    class IGameModule: public ILibrary {
+    class IGameModule {
         public:
             virtual ~IGameModule() = default;
 
-            virtual void simulate(Event) = 0;
-            virtual Assets getAssets() = 0;
-            virtual std::pair<Entities, Sounds> getElements() = 0;
-            virtual bool isOpen() = 0;
-            virtual SelectLibs libChanges(Libs) = 0;
+            virtual void simulate(const Event) noexcept = 0;
+            [[nodiscard]] virtual Assets getAssets() noexcept = 0;
+            [[nodiscard]] virtual std::pair<Entities, Sounds> getElements() noexcept = 0;
+            [[nodiscard]] virtual bool isOpen() noexcept = 0;
+            [[nodiscard]] virtual std::vector<Command> loadCommand() noexcept = 0;
     };
 }
 

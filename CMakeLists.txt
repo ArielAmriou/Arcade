@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(arcade)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -21,7 +22,7 @@ set(HEADERS
 add_executable(arcade ${MAIN} ${SRCS})
 target_include_directories(arcade PRIVATE ${HEADERS})
 
-target_compile_options(arcade PRIVATE -g)
+target_compile_options(arcade PRIVATE)
 
 add_custom_target(core
     DEPENDS arcade
@@ -48,11 +49,11 @@ add_custom_target(tests_run
 )
 
 add_custom_target(graphicals ALL
-    COMMAND ${CMAKE_COMMAND} -Blib/graphicals -Slib/graphicals
-    COMMAND make -C lib/graphicals
+    COMMAND ${CMAKE_COMMAND} -B../lib/graphicals -S../lib/graphicals
+    COMMAND make -C ../lib/graphicals
 )
 
 add_custom_target(games ALL
-    COMMAND ${CMAKE_COMMAND} -Blib/games -Slib/games
-    COMMAND make -C lib/games
+    COMMAND ${CMAKE_COMMAND} -B../lib/games -S../lib/games
+    COMMAND make -C ../lib/games
 )
