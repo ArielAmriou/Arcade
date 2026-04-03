@@ -12,9 +12,12 @@
 
 namespace arc {
     const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMapNcurses = {
-        {BUTTON1_PRESSED, Action::LeftMouse},
+        {BUTTON1_RELEASED, Action::LeftMouse},
         {BUTTON2_RELEASED, Action::MiddleMouse},
         {BUTTON3_RELEASED, Action::RightMouse},
+        {BUTTON1_PRESSED, Action::LeftMouse},
+        {BUTTON1_PRESSED, Action::MiddleMouse},
+        {BUTTON1_PRESSED, Action::RightMouse},
     };
 
     const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
@@ -143,20 +146,16 @@ namespace arc {
         Vector2f mousePos = {0, 0};
         const auto key = _keyMap.find(getInput);
         MEVENT eventMouse = {0};
+        int isMouse = getmouse(&eventMouse);
 
-        MyFile << "be4 if !" << std::endl;
-        MyFile << "getInput = " << getInput << " (KEY_MOUSE = " << KEY_MOUSE << ")" << std::endl;
-        if (getInput == KEY_MOUSE && getmouse(&eventMouse) == OK) {
-            MyFile << "if !" << std::endl;
+        if (isMouse == OK) {
             mousePos.first  = static_cast<float>(eventMouse.x) / getmaxx(_window);
             mousePos.second = static_cast<float>(eventMouse.y) / getmaxy(_window);
+        }
+        if (getInput == KEY_MOUSE && isMouse == OK) {
             const auto buttonPressed = _mouseButtonMapNcurses.find(eventMouse.bstate);
-                MyFile << "before! bstate : " << eventMouse.bstate << std::endl;
-                if (buttonPressed != _mouseButtonMapNcurses.end()) {
-                    MyFile << "inside! bstate : " << eventMouse.bstate << std::endl;
+                if (buttonPressed != _mouseButtonMapNcurses.end())
                     return {buttonPressed->second, mousePos};
-            }
-            MyFile << "Ooooh dang it! bstate : " << eventMouse.bstate << std::endl;
         }
         if (key != _keyMap.end())
             return {key->second, mousePos};
