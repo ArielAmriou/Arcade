@@ -21,12 +21,14 @@ namespace arc
     using Vector2f = std::pair<float, float>;
     using Assets = std::pair<std::vector<std::string>,
         std::vector<std::string>>;
+    using SplitLibs = std::pair<std::vector<std::string>,
+        std::vector<std::string>>;
 
     enum class LibType
     {
-        None = -1,
-        Display = 0,
-        Game = 1,
+        None,
+        Display,
+        Game,
     };
 
     enum class Action

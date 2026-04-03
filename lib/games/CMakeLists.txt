@@ -7,10 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(INCLUDE_SHARED
     ../../include/Shared/
     shared/include/
+    ../../include
 )
 
 set(SRCS_SHARED
-
+    ../../src/DLLoader.cpp
 )
 
 set(SNAKE

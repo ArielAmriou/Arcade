@@ -48,6 +48,8 @@ namespace arc {
                     throw arc::exceptions::NoEntryPoint();
                 return tmp;
             }
+
+            [[nodiscard]] arc::LibType getLibType();
         private:
             void *_handle = nullptr;
     };
