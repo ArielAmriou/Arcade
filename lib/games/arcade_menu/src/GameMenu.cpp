@@ -13,7 +13,7 @@ void arc::GameMenu::simulate(const Event event) noexcept
 {
     if (event.first == Action::Enter) {
         std::vector<std::string> args;
-        args.push_back("lib/libarcade_snake.so");
+        args.push_back("lib/arcade_snake.so");
         _commands.push_back(std::make_pair(Signal::LoadGame, args));
         return;
     }

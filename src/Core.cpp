@@ -58,9 +58,7 @@ void arc::Core::execCommand(const std::vector<Command> commands)
 void arc::Core::play() {
     Event event = {arc::Action::None, {0, 0}};
 
-    auto assets = _game->getAssets();
-    if (_display->setAssets(assets) == -1)
-        return;
+    loadAssets();
     while (event.first != arc::Action::Close) {
         event = _display->getEvent();
         _game->simulate(event);
@@ -82,7 +80,7 @@ void arc::Core::loadDisplay(std::vector<std::string> args)
     try {
         if (args.size())
             loadDisplayModule(args.front());
-    } catch (const std::exception &e){
+    } catch (const std::exception &e) {
         throw e;
     }
 }
@@ -90,9 +88,11 @@ void arc::Core::loadDisplay(std::vector<std::string> args)
 void arc::Core::loadGame(std::vector<std::string> args)
 {
     try {
-        if (args.size())
+        if (args.size()) {
             loadGameModule(args.front());
-    } catch (const std::exception &e){
+            loadAssets();
+        }
+    } catch (const std::exception &e) {
         throw e;
     }
 }
@@ -101,7 +101,7 @@ void arc::Core::restartGame(std::vector<std::string>)
 {
     try {
         loadGameModule(_gamePath);
-    } catch (const std::exception &e){
+    } catch (const std::exception &e) {
         throw e;
     }
 }
@@ -110,7 +110,15 @@ void arc::Core::BackToMenu(std::vector<std::string>)
 {
     try {
         loadGameModule(DEFAULT_GAME_PATH);
-    } catch (const std::exception &e){
+        loadAssets();
+    } catch (const std::exception &e) {
         throw e;
     }
+}
+
+void arc::Core::loadAssets()
+{
+    auto assets = _game->getAssets();
+    if (_display->setAssets(assets) == ERROR)
+        throw arc::exceptions::AssetLoadError();
 }

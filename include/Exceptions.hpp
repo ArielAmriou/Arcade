@@ -28,6 +28,11 @@ namespace arc {
             public:
                 const char* what() const throw() { return "No entry point in dynamic library"; }
         };
+
+        class AssetLoadError : public std::exception {
+            public:
+                const char* what() const throw() { return "Error while loading assets"; }
+        };
     }
 
 }

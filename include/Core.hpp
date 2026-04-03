@@ -36,6 +36,8 @@ namespace arc {
             void loadGame(std::vector<std::string>);
             void restartGame(std::vector<std::string>);
             void BackToMenu(std::vector<std::string>);
+
+            void loadAssets();
         private:
             DLLoader _loader;
             std::unique_ptr<IGameModule> _game;

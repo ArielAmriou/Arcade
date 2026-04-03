@@ -20,17 +20,18 @@
 #include <iostream>
 
 namespace arc {
-    class DLLoader;
-
     class DLLoader {
         public:
-            DLLoader(const std::string &path);
+            DLLoader() noexcept = default;
+            DLLoader(const std::string &path) noexcept;
             ~DLLoader();
 
-            void reset(const std::string &path);
+            void reset(const std::string &path) noexcept;
 
             template<typename T>
             [[nodiscard]] std::optional<std::unique_ptr<T>> makeInstance(arc::LibType expected) {
+                if (_handle == nullptr)
+                    return {};
                 void *symbol = dlsym(_handle, "getLibType");
                 auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
                 if (getLibType == nullptr || getLibType() != expected)
