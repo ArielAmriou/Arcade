@@ -108,28 +108,42 @@ namespace arc {
     {
         usleep(FRAMERATE);
         wclear(_window);
-        for (const auto &entity: elements.get().first) {
+        for (auto &entity: elements.first) {
             Vector2f pos = entity->getPos();
-            mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
-                static_cast<int>(pos.first * getmaxx(_window)), "%s",
-                _assets[entity->getIdx()].data());
+            /*std::ofstream MyFile("filename.txt");
+            MyFile << "ID : "<< entity->getIdx() << std::endl;*/
+            if (entity->getIdx() >= 0) {
+                mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
+                    static_cast<int>(pos.first * getmaxx(_window)), "%s",
+                    _assets[entity->getIdx()].data());
+            }
+            if (entity->getStr()) {
+                mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
+                    static_cast<int>(pos.first * getmaxx(_window)), "%s",
+                    entity->getStr()->data());
+            }
         }
         wrefresh(_window);
     }
 
     int DisplayNcurses::setAssets(const Assets assets) noexcept
     {
+        std::ofstream MyFile("filename.txt");
         std::string asset;
 
         _assets.clear();
+        MyFile << "Entry" << std::endl;
+        MyFile << assets.first.size();
         for (auto path: assets.first) {
-            path = "assets/" + path + ".txt";
+            path += ".txt";
+            MyFile << "path : " << path << std::endl;
             std::ifstream validPath (path, std::ifstream::binary);
             if (!validPath) {
                 std::cerr << "Error : " << path << " invalid path" << std::endl;
                 return ERROR;
             }
             std::getline(validPath, asset);
+            MyFile << "after getline : " << asset  << std::endl;
             /*validPath.read(&asset, 1)*/;
             if (!validPath) {
                 std::cerr << "Error : " << path << " could not read this file" << std::endl;
@@ -142,7 +156,6 @@ namespace arc {
 
     Event DisplayNcurses::getEvent() noexcept
     {
-        std::ofstream MyFile("filename.txt", std::ios::app);
         const int getInput = wgetch(_window);
         Vector2f mousePos = {0, 0};
         const auto key = _keyMap.find(getInput);
@@ -158,8 +171,10 @@ namespace arc {
                 if (buttonPressed != _mouseButtonMapNcurses.end())
                     return {buttonPressed->second, mousePos};
         }
-        if (key != _keyMap.end())
+        if (key != _keyMap.end()) {
+            beep();
             return {key->second, mousePos};
+        }
         return {Action::None, mousePos};
     }
 }
