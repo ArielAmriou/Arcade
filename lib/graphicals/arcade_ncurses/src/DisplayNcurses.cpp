@@ -108,7 +108,7 @@ namespace arc {
     {
         usleep(FRAMERATE);
         wclear(_window);
-        for (const auto &entity: elements.get().first) {
+        for (auto &entity: elements.first) {
             Vector2f pos = entity->getPos();
             mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
                 static_cast<int>(pos.first * getmaxx(_window)), "%s",
