@@ -37,7 +37,7 @@ arc::Event arc::DisplaySDL2::getEvent() noexcept
 {
     int x = 0;
     int y = 0;
-    SDL_GetGlobalMouseState(&x, &y);
+    SDL_GetMouseState(&x, &y);
     Vector2f pos = {x / WINX, y / WINY};
     Event value = {Action::None, pos};
     SDL_Event event;
@@ -143,8 +143,10 @@ void arc::DisplaySDL2::drawGame(const std::pair<Entities, Sounds> elements) noex
     }
     for (auto& sound : elements.second) {
         int idx = sound->getIdx();
-        int loop = sound->isLoop() ? -1 : 0;
-        Mix_PlayChannel(-1, _musics[idx], loop);
+        if (idx >= 0 && idx < _musics.size()) {
+            int loop = sound->isLoop() ? -1 : 0;
+            Mix_PlayChannel(-1, _musics[idx], loop);
+        }
     }
     SDL_RenderPresent(_renderer);
     SDL_Delay(1000 / 60);

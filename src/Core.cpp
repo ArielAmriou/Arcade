@@ -39,6 +39,7 @@ void arc::Core::loadGameModule(const std::string &path, const std::exception &e)
     if (!game.has_value())
         throw e;
     game.value().swap(_game);
+    DEBUG(path);
 }
 
 void arc::Core::loadDisplayModule(const std::string &path, const std::exception &e) {
@@ -47,6 +48,7 @@ void arc::Core::loadDisplayModule(const std::string &path, const std::exception 
     if (!disp.has_value())
         throw e;
     disp.value().swap(_display);
+    DEBUG(path);
 }
 
 void arc::Core::execCommand(const std::vector<Command> commands)
