@@ -6,9 +6,9 @@
 */
 
 #include <fstream>
-#include "DisplayNcurses.hpp"
 #include <iostream>
-#include<unistd.h>
+#include <unistd.h>
+#include "DisplayNcurses.hpp"
 
 namespace arc {
     const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMapNcurses = {
@@ -111,30 +111,31 @@ namespace arc {
         for (const auto &entity: elements.get().first) {
             Vector2f pos = entity->getPos();
             mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
-                static_cast<int>(pos.first * getmaxx(_window)), "%c",
-                _assets[entity->getIdx()]);
+                static_cast<int>(pos.first * getmaxx(_window)), "%s",
+                _assets[entity->getIdx()].data());
         }
         wrefresh(_window);
     }
 
     int DisplayNcurses::setAssets(Assets assets)
     {
-        char character;
+        std::string asset;
 
         _assets.clear();
         for (auto path: assets.first) {
             path = "assets/" + path + ".txt";
-            std::ifstream is_path_valid (path, std::ifstream::binary);
-            if (!is_path_valid) {
+            std::ifstream validPath (path, std::ifstream::binary);
+            if (!validPath) {
                 std::cerr << "Error : " << path << " invalid path" << std::endl;
                 return ERROR;
             }
-            is_path_valid.read(&character, 1);
-            if (!is_path_valid) {
-                std::cerr << "Error : " << path << " could not read the file" << std::endl;
+            std::getline(validPath, asset);
+            /*validPath.read(&asset, 1)*/;
+            if (!validPath) {
+                std::cerr << "Error : " << path << " could not read this file" << std::endl;
                 return ERROR;
-            } else
-                _assets.push_back(character);
+            }
+            _assets.push_back(asset);
         }
         return SUCCES;
     }
