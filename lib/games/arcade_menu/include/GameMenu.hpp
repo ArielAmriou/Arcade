@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include "Arcade.hpp"
 #include "IGameModule.hpp"
+#include "Score.hpp"
 
 namespace arc {
 
@@ -42,15 +43,19 @@ namespace arc {
             std::vector<LibType> _libType =
                 {LibType::Display, LibType::Game, LibType::None};
             std::string _name = "___";
-
+            std::set<size_t, std::greater<size_t>> _userScore;
+            Score _score;
             std::pair<std::size_t, std::size_t> _idxs = std::make_pair(0, 0);
+
             std::string formatPath(std::string str);
             std::string formatLen(std::string, std::size_t);
             void changeSelectLib(Action, std::size_t, std::reference_wrapper<std::size_t>);
             void showNLibs(std::vector<std::string>, float posx, size_t n,
                 size_t idx, std::reference_wrapper<Entities> entities);
+            void showScore(std::reference_wrapper<Entities> entities);
             std::vector<std::string> getLibsPath();
             SplitLibs splitLibs(std::vector<std::string>);
+            void changeName(Action);
     };
 }
 

@@ -12,14 +12,22 @@
 #include "Entity.hpp"
 #include "Sound.hpp"
 
+#include <iostream>
+#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
+
 arc::GameMenu::GameMenu()
 {
     _splitLibs = splitLibs(getLibsPath());
+    _splitLibs.second.push_back("lib/arcade_menu.so");
+    _splitLibs.second.push_back("lib/arcade_menu.so");
 }
 
 void arc::GameMenu::simulate(const Event event) noexcept
 {
     if (event.first == Action::Enter) {
+        std::vector<std::string> userArgs;
+        userArgs.push_back(_name);
+        _commands.push_back(std::make_pair(Signal::LoadUser, userArgs));
         // std::vector<std::string> displayArgs;
         // displayArgs.push_back(_splitLibs.first[_idxs.first]);
         // _commands.push_back(std::make_pair(Signal::LoadDisplay, displayArgs));
@@ -27,6 +35,14 @@ void arc::GameMenu::simulate(const Event event) noexcept
         gameArgs.push_back(_splitLibs.second[_idxs.second]);
         _commands.push_back(std::make_pair(Signal::LoadGame, gameArgs));
         return;
+    }
+    if (event.first == Action::Space) {
+        std::vector<std::string> userArgs;
+        userArgs.push_back(_name);
+        _commands.push_back(std::make_pair(Signal::LoadUser, userArgs));
+        std::vector<std::string> scoreArgs;
+        scoreArgs.push_back("100");
+        _commands.push_back(std::make_pair(Signal::LoadScore, scoreArgs));
     }
     if (event.first == Action::Right) {
         if (_selectLibType == _libType.size() - 1)
@@ -42,25 +58,11 @@ void arc::GameMenu::simulate(const Event event) noexcept
     }
     if (_libType[_selectLibType] == LibType::Display)
         changeSelectLib(event.first, _splitLibs.first.size(), _idxs.first);
-    else if (_libType[_selectLibType] == LibType::Game)
+    else if (_libType[_selectLibType] == LibType::Game) {
         changeSelectLib(event.first, _splitLibs.second.size(), _idxs.second);
-    else {
-        if (_letter.find(event.first) != _letter.end()) {
-            std::string c = _letter.find(event.first)->second;
-            auto pos = _name.find("_");
-            if (pos != std::string::npos)
-                _name.replace(pos, 1, c);
-        }
-        if (event.first == Action::Backspace) {
-            auto pos = _name.find("_");
-            if (pos != std::string::npos && pos != 0)
-                _name.replace(pos - 1, 1, "_");
-            if (pos == std::string::npos) {
-                _name.replace(_name.size() - 1, 1, "_");
-            }
-        }
-
-    }
+        _userScore = _score.getScores(_name, _splitLibs.second[_idxs.second]);
+    } else
+        changeName(event.first);
 }
 
 std::pair<arc::Entities, arc::Sounds> arc::GameMenu::getElements() noexcept
@@ -79,15 +81,17 @@ std::pair<arc::Entities, arc::Sounds> arc::GameMenu::getElements() noexcept
     entities.push_back(std::make_unique<arc::Entity>(title));
     Entity display(-1, {0.05, 0.2}, {0.25, 0.075}, formatLen("Display", 15), selectLibsColor[0]);
     entities.push_back(std::make_unique<arc::Entity>(display));
+    showNLibs(_splitLibs.first, 0.05, 4, _idxs.first, entities);
     Entity game(-1, {0.375, 0.2}, {0.25, 0.075}, formatLen("Game", 15), selectLibsColor[1]);
     entities.push_back(std::make_unique<arc::Entity>(game));
-    showNLibs(_splitLibs.first, 0.05, 4, _idxs.first, entities);
     showNLibs(_splitLibs.second, 0.375, 4, _idxs.second, entities);
-
-    Entity name(-1, {0.7, 0.2}, {0.25, 0.075}, formatLen("NAME", 15), selectLibsColor[2]);
+    Entity name(-1, {0.7, 0.2}, {0.25, 0.075}, formatLen("Name", 15), selectLibsColor[2]);
     entities.push_back(std::make_unique<arc::Entity>(name));
-    Entity user_name(-1, {0.7, 0.3}, {0.25, 0.075}, formatLen(_name, 15), WHITE);
+    Entity user_name(-1, {0.7, 0.3}, {0.25, 0.075}, formatLen(_name, 15));
     entities.push_back(std::make_unique<arc::Entity>(user_name));
+    Entity score(-1, {0.375, 0.625}, {0.25, 0.075}, formatLen("Score", 15));
+    entities.push_back(std::make_unique<arc::Entity>(score));
+    showScore(entities);
     if (_loadBackground) {
         Sound background(0, true);
         sounds.push_back(std::make_unique<arc::Sound>(background));
@@ -186,6 +190,46 @@ arc::SplitLibs arc::GameMenu::splitLibs(std::vector<std::string> libs)
             split.second.push_back(lib);
     }
     return split;
+}
+
+void arc::GameMenu::changeName(Action action)
+{
+    bool change = false;
+    if (_letter.find(action) != _letter.end()) {
+        std::string c = _letter.find(action)->second;
+        auto pos = _name.find("_");
+        if (pos != std::string::npos) {
+            _name.replace(pos, 1, c);
+            change = true;
+        }
+    }
+    if (action == Action::Backspace) {
+        auto pos = _name.find("_");
+        if (pos != std::string::npos && pos != 0)
+            _name.replace(pos - 1, 1, "_");
+        if (pos == std::string::npos) {
+            _name.replace(_name.size() - 1, 1, "_");
+            change = true;
+        }
+    }
+    if (change)
+        _userScore = _score.getScores(_name, _splitLibs.second[_idxs.second]);
+}
+
+void arc::GameMenu::showScore(std::reference_wrapper<Entities> entities)
+{
+    auto iter = _userScore.begin();
+    for (size_t i = 0; i < 9; i++) {
+        std::string rang = std::to_string(i + 1);
+        std::string score = "N/A";
+        if (iter != _userScore.end()) {
+            score = std::to_string(*iter);
+            iter++;
+        }
+        Entity scores(-1, {0.05 + (i / 3 * 0.325), 0.725 + (i % 3 * 0.1)},
+            {0.25, 0.04}, formatLen("##" + rang + ": " + score, LIBMAXSIZE));
+        entities.get().push_back(std::make_unique<arc::Entity>(scores));
+    }
 }
 
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameMenu::_assets = {

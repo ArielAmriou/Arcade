@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <string_view>
 
 constexpr int SUCCESS = 0;
 constexpr int EPIERROR = 84;
@@ -157,6 +158,8 @@ namespace arc
     };
 
     using Command = std::pair<Signal, std::vector<std::string>>;
+
+    constexpr std::string_view SCORE_PATH = "score/score.csv";
 }
 
 #endif

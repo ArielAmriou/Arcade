@@ -32,6 +32,7 @@ set(MENU
 
 set(SRCS_MENU
     ${MENU}/src/GameMenu.cpp
+    ${MENU}/src/Score.cpp
 )
 
 add_library(${MENU} SHARED ${SRCS_MENU} ${SRCS_SHARED})

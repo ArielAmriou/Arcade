@@ -135,7 +135,8 @@ void arc::Core::loadUser(std::vector<std::string> args)
 
 void arc::Core::loadScore(std::vector<std::string> args)
 {
-    std::ofstream log("score/score.csv", std::ios_base::app | std::ios_base::out);
+    std::string scorePath(SCORE_PATH);
+    std::ofstream log(scorePath, std::ios_base::app | std::ios_base::out);
 
     if (args.size() && _user.find("_") == std::string::npos && !log.fail()) {
         int score = 0;
