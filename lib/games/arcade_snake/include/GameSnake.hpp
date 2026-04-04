@@ -30,10 +30,12 @@ namespace arc {
             };
 
             void simulate(const Event) noexcept;
-            Assets getAssets() noexcept {return _assets;}
+            Assets getAssets() noexcept;
             std::pair<Entities, Sounds> getElements() noexcept;
             bool isOpen() noexcept {return _open;}
             std::vector<Command> loadCommand() noexcept;
+    
+            void exit(Signal, std::vector<std::string>);
 
         private:
             static const Assets _assets;
@@ -47,7 +49,8 @@ namespace arc {
             bool _tab = false;
             bool _shift = false;
             std::vector<Command> _commands;
-            bool _loadBackground = true;
+            bool _loadBackground = false;
+            size_t _score = 0;
     };
 }
 

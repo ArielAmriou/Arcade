@@ -152,6 +152,8 @@ namespace arc
         LoadGame,
         RestartGame,
         BackToMenu,
+        LoadUser,
+        LoadScore,
     };
 
     using Command = std::pair<Signal, std::vector<std::string>>;

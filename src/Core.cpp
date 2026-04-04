@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include "Core.hpp"
 #include "DLLoader.hpp"
 #include "Exceptions.hpp"
@@ -17,6 +18,8 @@ arc::Core::Core(const std::string &path): _loader(path) {
     _commands[arc::Signal::LoadGame] = [this](std::vector<std::string> list) {loadGame(list);};
     _commands[arc::Signal::RestartGame] = [this](std::vector<std::string> list) {restartGame(list);};
     _commands[arc::Signal::BackToMenu] = [this](std::vector<std::string> list) {BackToMenu(list);};
+    _commands[arc::Signal::LoadUser] = [this](std::vector<std::string> list) {loadUser(list);};
+    _commands[arc::Signal::LoadScore] = [this](std::vector<std::string> list) {loadScore(list);};
     try {
         auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
         if (!disp.has_value())
@@ -91,6 +94,7 @@ void arc::Core::loadGame(std::vector<std::string> args)
         if (args.size()) {
             loadGameModule(args.front());
             loadAssets();
+            _gamePath = args.front();
         }
     } catch (const std::exception &e) {
         throw e;
@@ -122,3 +126,24 @@ void arc::Core::loadAssets()
     if (_display->setAssets(assets) == ERROR)
         throw arc::exceptions::AssetLoadError();
 }
+
+void arc::Core::loadUser(std::vector<std::string> args)
+{
+    if (args.size())
+        _user = args.front();
+}
+
+void arc::Core::loadScore(std::vector<std::string> args)
+{
+    std::ofstream log("score/score.csv", std::ios_base::app | std::ios_base::out);
+
+    if (args.size() && _user.find("_") == std::string::npos && !log.fail()) {
+        int score = 0;
+        std::istringstream tmp(args.front());
+        tmp >> score;
+        if (tmp.fail())
+            return;
+        log << _user + "," + _gamePath + "," << score << "\n";
+    }
+}
+

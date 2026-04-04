@@ -38,6 +38,12 @@ arc::GameSnake::GameSnake() : _rotation(90), _tick(0)
     }
 }
 
+arc::Assets arc::GameSnake::getAssets() noexcept
+{
+    _loadBackground = true;
+    return _assets;
+}
+
 void arc::GameSnake::simulate(const Event event) noexcept
 {
     int head = _snake[0];
@@ -48,7 +54,7 @@ void arc::GameSnake::simulate(const Event event) noexcept
     }
     if (event.first == Action::Enter) {
         std::vector<std::string> args;
-        _commands.push_back(std::make_pair(Signal::RestartGame, args));
+        exit(Signal::BackToMenu, args);
         return;
     }
     _events.push_back(event);
@@ -76,8 +82,8 @@ void arc::GameSnake::simulate(const Event event) noexcept
         if (head >= GRIDX)
             head -= GRIDX;
         else {
-            std::vector<std::string> args; 
-            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            std::vector<std::string> args;
+            exit(Signal::RestartGame, args);
             return;
         }
     }
@@ -85,8 +91,8 @@ void arc::GameSnake::simulate(const Event event) noexcept
         if (head % GRIDX != GRIDX - 1)
             head += 1;
         else {
-            std::vector<std::string> args; 
-            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            std::vector<std::string> args;
+            exit(Signal::RestartGame, args);
             return;
         }
     }
@@ -94,8 +100,8 @@ void arc::GameSnake::simulate(const Event event) noexcept
         if (head < SIZE - GRIDX)
             head += GRIDX;
         else {
-            std::vector<std::string> args; 
-            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            std::vector<std::string> args;
+            exit(Signal::RestartGame, args);
             return;
         }
     }
@@ -103,8 +109,8 @@ void arc::GameSnake::simulate(const Event event) noexcept
         if (head % GRIDX != 0)
             head -= 1;
         else {
-            std::vector<std::string> args; 
-            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            std::vector<std::string> args;
+            exit(Signal::RestartGame, args);
             return;
         }
     }
@@ -115,6 +121,7 @@ void arc::GameSnake::simulate(const Event event) noexcept
     _snake[0] = head;
 
     if (head == _apple) {
+        _score += 10;
         _eat = true;
         _snake.push_back(tail);
         while (true) {
@@ -134,8 +141,8 @@ void arc::GameSnake::simulate(const Event event) noexcept
 
     for (std::size_t i = 1; i < _snake.size(); i++)
         if (_snake[0] == _snake[i]) {
-            std::vector<std::string> args; 
-            _commands.push_back(std::make_pair(Signal::RestartGame, args));
+            std::vector<std::string> args;
+            exit(Signal::RestartGame, args);
             return;
         }
 }
@@ -172,6 +179,16 @@ std::vector<arc::Command> arc::GameSnake::loadCommand() noexcept
 
     _commands.clear();
     return cpy;
+}
+
+void arc::GameSnake::exit(Signal signal, std::vector<std::string> args)
+{
+    if (_score != 0) {
+        std::vector<std::string> argsScore;
+        argsScore.push_back(std::to_string(_score));
+        _commands.push_back(std::make_pair(Signal::LoadScore, argsScore));
+    }
+    _commands.push_back(std::make_pair(signal, args));
 }
 
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameSnake::_assets = {

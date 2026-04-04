@@ -36,6 +36,8 @@ namespace arc {
             void loadGame(std::vector<std::string>);
             void restartGame(std::vector<std::string>);
             void BackToMenu(std::vector<std::string>);
+            void loadUser(std::vector<std::string>);
+            void loadScore(std::vector<std::string>);
 
             void loadAssets();
         private:
@@ -43,8 +45,10 @@ namespace arc {
             std::unique_ptr<IGameModule> _game;
             std::unique_ptr<IDisplayModule> _display;
             std::string _gamePath = DEFAULT_GAME_PATH;
+            std::string _user = "___";
 
             std::unordered_map<arc::Signal, std::function<void(std::vector<std::string>)>> _commands;
+
     };
 }
 
