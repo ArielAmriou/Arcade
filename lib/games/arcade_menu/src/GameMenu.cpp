@@ -18,8 +18,6 @@
 arc::GameMenu::GameMenu()
 {
     _splitLibs = splitLibs(getLibsPath());
-    _splitLibs.second.push_back("lib/arcade_menu.so");
-    _splitLibs.second.push_back("lib/arcade_menu.so");
 }
 
 void arc::GameMenu::simulate(const Event event) noexcept
