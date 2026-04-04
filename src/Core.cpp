@@ -13,7 +13,7 @@
 #include "Exceptions.hpp"
 #define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
-arc::Core::Core(const std::string &path): _loader(path) {
+arc::Core::Core(const std::string &path): _loader(path), _displayPath(path) {
     _commands[arc::Signal::LoadDisplay] = [this](std::vector<std::string> list) {loadDisplay(list);};
     _commands[arc::Signal::LoadGame] = [this](std::vector<std::string> list) {loadGame(list);};
     _commands[arc::Signal::RestartGame] = [this](std::vector<std::string> list) {restartGame(list);};
@@ -81,8 +81,11 @@ void arc::Core::help() noexcept {
 void arc::Core::loadDisplay(std::vector<std::string> args)
 {
     try {
-        if (args.size())
+        if (args.size() && _displayPath != args.front()) {
             loadDisplayModule(args.front());
+            loadAssets();
+            _displayPath = args.front();
+        }
     } catch (const std::exception &e) {
         throw e;
     }

@@ -134,7 +134,7 @@ namespace arc {
             /*
             if (entity->getColor()); atron etc
             */
-            if (entity->getIdx() >= 0)
+            if (entity->getIdx() >= 0 && entity->getIdx() < _assets.size())
                 mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
                     static_cast<int>(pos.first * getmaxx(_window)), "%s",
                     _assets[entity->getIdx()].data());

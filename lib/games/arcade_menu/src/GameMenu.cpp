@@ -26,9 +26,9 @@ void arc::GameMenu::simulate(const Event event) noexcept
         std::vector<std::string> userArgs;
         userArgs.push_back(_name);
         _commands.push_back(std::make_pair(Signal::LoadUser, userArgs));
-        // std::vector<std::string> displayArgs;
-        // displayArgs.push_back(_splitLibs.first[_idxs.first]);
-        // _commands.push_back(std::make_pair(Signal::LoadDisplay, displayArgs));
+        std::vector<std::string> displayArgs;
+        displayArgs.push_back(_splitLibs.first[_idxs.first]);
+        _commands.push_back(std::make_pair(Signal::LoadDisplay, displayArgs));
         std::vector<std::string> gameArgs;
         gameArgs.push_back(_splitLibs.second[_idxs.second]);
         _commands.push_back(std::make_pair(Signal::LoadGame, gameArgs));
