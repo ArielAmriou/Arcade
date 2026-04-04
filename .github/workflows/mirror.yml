@@ -36,10 +36,10 @@ jobs:
           fetch-depth: '0'
       - name: CMake
         timeout-minutes: 2
-        run: cmake . .
+        run: mkdir -p ./build/ ; cd ./build/ ; cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ; cd ..
       - name: Make
         timeout-minutes: 5
-        run: make
+        run: make -C build/
       - name: Check Binary
         run: |
           files=${{ env.BINARY }}
@@ -61,10 +61,10 @@ jobs:
           fetch-depth: '0'
       - name: CMake
         timeout-minutes: 2
-        run: cmake . .
+        run: mkdir -p ./build/ ; cd ./build/ ; cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ; cd ..
       - name: Make Test
         timeout-minutes: 5
-        run: make tests_run
+        run: make tests_run -C build
   
   push_to_mirror:
     needs: run_tests
