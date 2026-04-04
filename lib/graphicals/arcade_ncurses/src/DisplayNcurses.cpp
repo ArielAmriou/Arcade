@@ -20,7 +20,7 @@ namespace arc {
         {BUTTON1_PRESSED, Action::RightMouse},
     };
 
-    const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
+        const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
         {ERR, Action::None},
         {'a', Action::A},
         {'b', Action::B},
@@ -48,6 +48,7 @@ namespace arc {
         {'x', Action::X},
         {'y', Action::Y},
         {'z', Action::Z},
+        {'0', Action::Num0},
         {'1', Action::Num1},
         {'2', Action::Num2},
         {'3', Action::Num3},
@@ -57,32 +58,52 @@ namespace arc {
         {'7', Action::Num7},
         {'8', Action::Num8},
         {'9', Action::Num9},
-        {'0', Action::Num0},
-        {'\n', Action::Enter},
         {ESC_CHARACTER, Action::Escape},
-        {'\t', Action::Tab},
-        {' ', Action::Space},
-        {'-', Action::Subtract},
-        {'=', Action::Equal},
-        {'{', Action::LBracket},
-        {'}', Action::RBracket},
-        {'\\', Action::Backslash},
+        {KEY_SLEFT, Action::LShift},
+        {KEY_SRIGHT, Action::RShift},
+        {'[', Action::LBracket},
+        {']', Action::RBracket},
         {';', Action::Semicolon},
-        {'\'', Action::Apostrophe},
         {',', Action::Comma},
         {'.', Action::Period},
+        {'\'', Action::Apostrophe},
         {'/', Action::Slash},
-        {'`', Action::Hyphen},
+        {'\\', Action::Backslash},
+        {'`', Action::Grave},
+        {'=', Action::Equal},
+        {'-', Action::Hyphen},
+        {' ', Action::Space},
+        {'\n', Action::Enter},
+        {KEY_BACKSPACE, Action::Backspace},
+        {'\t', Action::Tab},
+        {KEY_PPAGE, Action::PageUp},
+        {KEY_NPAGE, Action::PageDown},
+        {KEY_END, Action::End},
+        {KEY_HOME, Action::Home},
+        {KEY_IC, Action::Insert},
+        {KEY_DC, Action::Delete},
+        {'+', Action::Add},
+        {'*', Action::Multiply},
         {KEY_RIGHT, Action::Right},
         {KEY_LEFT, Action::Left},
-        {KEY_DOWN, Action::Down},
         {KEY_UP, Action::Up},
-        {'/', Action::Divide},
-        {'*', Action::Multiply},
-        {'-', Action::Subtract},
-        {'+', Action::Add},
-        {'.', Action::Period},
-        {'=', Action::Equal}
+        {KEY_DOWN, Action::Down},
+        {KEY_F(1), Action::F1},
+        {KEY_F(2), Action::F2},
+        {KEY_F(3), Action::F3},
+        {KEY_F(4), Action::F4},
+        {KEY_F(5), Action::F5},
+        {KEY_F(6), Action::F6},
+        {KEY_F(7), Action::F7},
+        {KEY_F(8), Action::F8},
+        {KEY_F(9), Action::F9},
+        {KEY_F(10), Action::F10},
+        {KEY_F(11), Action::F11},
+        {KEY_F(12), Action::F12},
+        {KEY_F(13), Action::F13},
+        {KEY_F(14), Action::F14},
+        {KEY_F(15), Action::F15},
+        {KEY_SUSPEND, Action::Pause},
     };
 
     DisplayNcurses::~DisplayNcurses()
@@ -110,18 +131,17 @@ namespace arc {
         wclear(_window);
         for (auto &entity: elements.first) {
             Vector2f pos = entity->getPos();
-            /*std::ofstream MyFile("filename.txt");
-            MyFile << "ID : "<< entity->getIdx() << std::endl;*/
-            if (entity->getIdx() >= 0) {
+            /*
+            if (entity->getColor()); atron etc
+            */
+            if (entity->getIdx() >= 0)
                 mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
                     static_cast<int>(pos.first * getmaxx(_window)), "%s",
                     _assets[entity->getIdx()].data());
-            }
-            if (entity->getStr()) {
+            if (entity->getStr())
                 mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
                     static_cast<int>(pos.first * getmaxx(_window)), "%s",
                     entity->getStr()->data());
-            }
         }
         wrefresh(_window);
     }
