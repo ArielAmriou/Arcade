@@ -15,7 +15,7 @@
 #define ERROR (-1)
 #define SUCCES 0
 #define FRAMERATE (1000000/30)
-#define ESC_CHARACTER (-27)
+#define ESC_CHARACTER 27
 #define DOWN_ARROW 0x42
 #define UP_ARROW 0x41
 #define RIGHT_ARROW 0x43
