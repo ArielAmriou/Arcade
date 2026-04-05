@@ -150,4 +150,3 @@ void arc::Core::loadScore(std::vector<std::string> args)
         log << _user + "," + _gamePath + "," << score << "\n";
     }
 }
-

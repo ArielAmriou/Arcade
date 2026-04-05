@@ -17,7 +17,7 @@
 
 arc::GameMenu::GameMenu()
 {
-    _splitLibs = splitLibs(getLibsPath());
+    _splitLibs = arc::utils::getSplitLibs();
 }
 
 void arc::GameMenu::simulate(const Event event) noexcept
@@ -161,33 +161,6 @@ void arc::GameMenu::showNLibs(std::vector<std::string> list, float posx, size_t 
         Entity entity(-1, {posx, 0.3 + (0.075 * (i - start))}, {0.25, 0.05}, str, color);
         entities.get().push_back(std::make_unique<arc::Entity>(entity));
     }
-}
-
-std::vector<std::string> arc::GameMenu::getLibsPath()
-{
-    std::vector<std::string> list;
-
-    for (auto &entry : std::filesystem::directory_iterator(LIBDIR)) {
-        std::string path = entry.path().string();
-        if (path.starts_with(LIBPATH) && path.ends_with(LIBEXT)) {
-            list.push_back(path);
-        }
-    }
-    return list;
-}
-
-arc::SplitLibs arc::GameMenu::splitLibs(std::vector<std::string> libs)
-{
-    SplitLibs split;
-
-    for (auto lib: libs) {
-        DLLoader loader(lib);
-        if (loader.getLibType() == LibType::Display)
-            split.first.push_back(lib);
-        else
-            split.second.push_back(lib);
-    }
-    return split;
 }
 
 void arc::GameMenu::changeName(Action action)

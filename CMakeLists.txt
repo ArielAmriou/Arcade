@@ -12,17 +12,19 @@ set(MAIN
 set(SRCS
     src/Core.cpp
     src/DLLoader.cpp
+    src/Utils.cpp
 )
 
 set(HEADERS
     include/
-    include/Shared
+    include/Shared/
+    lib/utils/include/
 )
 
 add_executable(arcade ${MAIN} ${SRCS})
 target_include_directories(arcade PRIVATE ${HEADERS})
 
-target_compile_options(arcade PRIVATE)
+#target_compile_options(arcade PRIVATE -g)
 
 add_custom_target(core
     DEPENDS arcade
@@ -56,4 +58,12 @@ add_custom_target(graphicals ALL
 add_custom_target(games ALL
     COMMAND ${CMAKE_COMMAND} -B../lib/games -S../lib/games
     COMMAND make -C ../lib/games
+)
+
+file(GLOB_RECURSE LIBS
+    "${CMAKE_SOURCE_DIR}/lib/arcade_*.so"
+)
+
+add_custom_target(clean_libs
+    COMMAND rm ${LIBS}
 )

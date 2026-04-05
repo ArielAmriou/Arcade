@@ -22,8 +22,6 @@ namespace arc
     using Vector2f = std::pair<float, float>;
     using Assets = std::pair<std::vector<std::string>,
         std::vector<std::string>>;
-    using SplitLibs = std::pair<std::vector<std::string>,
-        std::vector<std::string>>;
 
     enum class LibType
     {

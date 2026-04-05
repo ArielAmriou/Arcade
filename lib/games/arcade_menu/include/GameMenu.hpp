@@ -13,12 +13,10 @@
 #include "Arcade.hpp"
 #include "IGameModule.hpp"
 #include "Score.hpp"
+#include "Utils.hpp"
 
 namespace arc {
 
-    constexpr std::string_view LIBDIR = "lib";
-    constexpr std::string_view LIBPATH = "lib/arcade_";
-    constexpr std::string_view LIBEXT = ".so";
     constexpr std::size_t LIBMAXSIZE = 25;
 
     class GameMenu : public IGameModule {
@@ -53,8 +51,6 @@ namespace arc {
             void showNLibs(std::vector<std::string>, float posx, size_t n,
                 size_t idx, std::reference_wrapper<Entities> entities);
             void showScore(std::reference_wrapper<Entities> entities);
-            std::vector<std::string> getLibsPath();
-            SplitLibs splitLibs(std::vector<std::string>);
             void changeName(Action);
     };
 }
