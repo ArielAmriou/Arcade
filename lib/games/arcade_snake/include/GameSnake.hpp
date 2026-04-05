@@ -24,9 +24,12 @@ namespace arc {
             ~GameSnake() {};
 
             enum class Box {
+                Head,
+                Tail,
+                Body,
+                Turn,
+                Apple,
                 None,
-                Ariel,
-                Ilias,
             };
 
             void simulate(const Event) noexcept;
@@ -51,6 +54,16 @@ namespace arc {
             std::vector<Command> _commands;
             bool _loadBackground = false;
             size_t _score = 0;
+
+            void drawSnakePart(
+                std::reference_wrapper<Entities> entities, size_t idx);
+            void drawBody(
+                std::reference_wrapper<Entities> entities, size_t idx);
+            void drawTurnBody(
+                std::reference_wrapper<Entities> entities, size_t idx);
+            void drawTail(
+                std::reference_wrapper<Entities> entities, size_t idx);
+            Vector2f getPartPos(size_t part);
     };
 }
 

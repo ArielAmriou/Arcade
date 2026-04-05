@@ -152,13 +152,9 @@ std::pair<arc::Entities, arc::Sounds> arc::GameSnake::getElements() noexcept
     Entities entities;
     Sounds sounds;
 
-    float rotation = _rotation;
-    for (auto snake: _snake) {
-        Entity tmp(0, {(float)(snake % GRIDX) / GRIDX, (snake - (float)(snake % GRIDX)) / GRIDX / GRIDY}, {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
-        entities.push_back(std::make_unique<arc::Entity>(tmp));
-        rotation = 0;
-    }
-    Entity tmp(1, {(float)(_apple % GRIDX) / GRIDX, (_apple - (float)(_apple % GRIDX)) / GRIDX / GRIDY}, {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
+    for (size_t i = 0; i < _snake.size(); i++)
+        drawSnakePart(entities, i);
+    Entity tmp(static_cast<size_t>(Box::Apple), {(float)(_apple % GRIDX) / GRIDX, (_apple - (float)(_apple % GRIDX)) / GRIDX / GRIDY}, {1.0 / GRIDX, 1.0 / GRIDY}, 0);
     entities.push_back(std::make_unique<arc::Entity>(tmp));
     if (_loadBackground) {
         Sound background(0, true);
@@ -191,10 +187,96 @@ void arc::GameSnake::exit(Signal signal, std::vector<std::string> args)
     _commands.push_back(std::make_pair(signal, args));
 }
 
+void arc::GameSnake::drawSnakePart(
+    std::reference_wrapper<Entities> entities, size_t idx)
+{
+    if (idx == 0) {
+        auto snake = _snake[idx];
+        Entity part(static_cast<size_t>(Box::Head), getPartPos(snake),
+            {1.0 / GRIDX, 1.0 / GRIDY}, _rotation);
+        entities.get().push_back(std::make_unique<arc::Entity>(part));
+    } else if (idx == _snake.size() - 1)
+        drawTail(entities, idx);
+    else
+        drawBody(entities, idx);
+}
+
+void arc::GameSnake::drawBody(
+    std::reference_wrapper<Entities> entities, size_t idx)
+{
+    auto snake = _snake[idx];
+    auto before = _snake[idx - 1];
+    auto after = _snake[idx + 1];
+    float rotation = 0;
+
+    if (abs(before - after) != 2 && abs(before - after) != GRIDX * 2)
+        return drawTurnBody(entities, idx);
+    if (before == snake - 1)
+        rotation = 270;
+    if (before == snake + 1)
+        rotation = 90;
+    Entity part(static_cast<size_t>(Box::Body), getPartPos(snake),
+            {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
+    entities.get().push_back(std::make_unique<arc::Entity>(part));
+}
+
+void arc::GameSnake::drawTurnBody(
+    std::reference_wrapper<Entities> entities, size_t idx)
+{
+    auto snake = _snake[idx];
+    auto before = _snake[idx - 1];
+    auto after = _snake[idx + 1];
+    float rotation = 0;
+
+    if ((before % GRIDX == snake % GRIDX && before > snake
+        && after + 1 == snake) || (after % GRIDX == snake % GRIDX
+        && after > snake && before + 1 == snake))
+        rotation = 90;
+    if ((before % GRIDX == snake % GRIDX && before < snake
+        && after + 1 == snake) || (after % GRIDX == snake % GRIDX
+        && after < snake && before + 1 == snake))
+        rotation = 180;
+    if ((before % GRIDX == snake % GRIDX && before < snake
+        && after - 1 == snake) || (after % GRIDX == snake % GRIDX
+        && after < snake && before - 1 == snake))
+        rotation = 270;
+    Entity part(static_cast<size_t>(Box::Turn), getPartPos(snake),
+            {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
+    entities.get().push_back(std::make_unique<arc::Entity>(part));
+}
+
+void arc::GameSnake::drawTail(
+    std::reference_wrapper<Entities> entities, size_t idx)
+{
+    auto snake = _snake[idx];
+    auto before = _snake[idx - 1];
+    float rotation = 0;
+
+    if (before == snake - 1)
+        rotation = 270;
+    if (before > snake)
+        rotation = 180;
+    if (before == snake + 1)
+        rotation = 90;
+    Entity part(static_cast<size_t>(Box::Tail), getPartPos(snake),
+            {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
+    entities.get().push_back(std::make_unique<arc::Entity>(part));
+}
+
+arc::Vector2f arc::GameSnake::getPartPos(size_t part)
+{ 
+    float x = (float)(part % GRIDX) / GRIDX;
+    float y = (part - (float)(part % GRIDX)) / GRIDX / GRIDY;
+    return std::make_pair(x, y);
+}
+
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameSnake::_assets = {
     {
-        "assets/snake/loan",
-        "assets/snake/ariel",
+        "assets/snake/snakeHead",
+        "assets/snake/snakeTail",
+        "assets/snake/snakeBody",
+        "assets/snake/snakeTurn",
+        "assets/snake/apple",
     }, {
         "assets/snake/background.wav",
         "assets/snake/pickUp.wav"
