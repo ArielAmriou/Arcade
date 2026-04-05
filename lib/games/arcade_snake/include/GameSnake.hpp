@@ -18,6 +18,9 @@ namespace arc {
     constexpr int GRIDY = 9;
     constexpr int SIZE = GRIDX * GRIDY;
     constexpr std::array<float, 4> ANGLE = {0, 90, 180, 270};
+    constexpr std::size_t GAIN = 10;
+    constexpr std::size_t MOVETICK = 10;
+    constexpr std::size_t STARTBODYSIZE = 3;
 
     class GameSnake : public IGameModule {
         public:
@@ -62,8 +65,6 @@ namespace arc {
             std::vector<std::size_t> _snake;
             float _eat = false;
             bool _open = true;
-            bool _tab = false;
-            bool _shift = false;
             std::vector<Command> _commands;
             bool _loadBackground = false;
             size_t _score = 0;
@@ -78,6 +79,13 @@ namespace arc {
                 std::reference_wrapper<Entities> entities, size_t idx);
             Vector2f getPartPos(size_t part);
             float getAngle(Turn turn) {return ANGLE[static_cast<size_t>(turn)];}
+            void spawnApple();
+            bool checkSnakeCollision(size_t idx);
+            bool moveHead(float angle, bool condition, int newPos,
+                std::reference_wrapper<size_t> head);
+            void changeDir();
+            bool prevCheck(Event);
+            void moveSnake(size_t);
     };
 }
 

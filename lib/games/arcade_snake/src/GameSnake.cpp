@@ -12,30 +12,15 @@
 #include "Sound.hpp"
 #include "IGameModule.hpp"
 
-#include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
-
 arc::GameSnake::GameSnake() : _rotation(getAngle(Turn::Right)), _tick(0)
 {
     srand((unsigned)time(0));
     int head = rand() % SIZE;
-    if (head % GRIDX <= 2)
-        head += 2;
-    for (std::size_t i = head; i > head - 3; i--)
+    if (head % GRIDX <= STARTBODYSIZE)
+        head += STARTBODYSIZE;
+    for (std::size_t i = head; i >= head - STARTBODYSIZE; i--)
         _snake.push_back(i);
-    while (true) {
-        int nb = rand() % SIZE;
-        bool collision = false;
-        for (auto snake: _snake)
-            if (snake == nb) {
-                collision = true;
-                continue;
-            }
-        if (collision)
-            continue;
-        _apple = nb;
-        break;
-    }
+    spawnApple();
 }
 
 arc::Assets arc::GameSnake::getAssets() noexcept
@@ -46,105 +31,16 @@ arc::Assets arc::GameSnake::getAssets() noexcept
 
 void arc::GameSnake::simulate(const Event event) noexcept
 {
-    int head = _snake[0];
-
-    if (event.first == Action::A || event.first == Action::Close) {
-        _open = false;
+    size_t head = _snake[0];
+    
+    if (prevCheck(event)
+        || moveHead(getAngle(Turn::Top), (head >= GRIDX), -GRIDX, head)
+        || moveHead(getAngle(Turn::Right),
+            (head % GRIDX != GRIDX - 1), 1, head)
+        || moveHead(getAngle(Turn::Bottom), (head < SIZE - GRIDX), GRIDX, head)
+        || moveHead(getAngle(Turn::Left), (head % GRIDX != 0), -1, head))
         return;
-    }
-    if (event.first == Action::Enter) {
-        std::vector<std::string> args;
-        exit(Signal::BackToMenu, args);
-        return;
-    }
-    _events.push_back(event);
-    _tick++;
-    if (_tick != 10)
-        return;
-    _tick = 0;
-    for (auto myevent: _events) {
-        auto action = myevent.first;
-        if (action == Action::LShift)
-            _shift = true;
-        if (action == Action::Tab)
-            _tab = true;
-        if ((action == Action::Z || action == Action::Up) && _rotation != getAngle(Turn::Bottom))
-            _rotation = 0;
-        if ((action == Action::S || action == Action::Down) && _rotation != 0)
-            _rotation = getAngle(Turn::Bottom);
-        if ((action == Action::Q || action == Action::Left) && _rotation != getAngle(Turn::Right))
-            _rotation = getAngle(Turn::Left);
-        if ((action == Action::D || action == Action::Right) && _rotation != getAngle(Turn::Left))
-            _rotation = getAngle(Turn::Right);
-    }
-
-    if (_rotation == 0) {
-        if (head >= GRIDX)
-            head -= GRIDX;
-        else {
-            std::vector<std::string> args;
-            exit(Signal::RestartGame, args);
-            return;
-        }
-    }
-    if (_rotation == getAngle(Turn::Right)) {
-        if (head % GRIDX != GRIDX - 1)
-            head += 1;
-        else {
-            std::vector<std::string> args;
-            exit(Signal::RestartGame, args);
-            return;
-        }
-    }
-    if (_rotation == getAngle(Turn::Bottom)) {
-        if (head < SIZE - GRIDX)
-            head += GRIDX;
-        else {
-            std::vector<std::string> args;
-            exit(Signal::RestartGame, args);
-            return;
-        }
-    }
-    if (_rotation == getAngle(Turn::Left)) {
-        if (head % GRIDX != 0)
-            head -= 1;
-        else {
-            std::vector<std::string> args;
-            exit(Signal::RestartGame, args);
-            return;
-        }
-    }
-
-    int tail = _snake.back();
-    for (int i = _snake.size() - 1; i > 0; i--)
-        _snake[i] = _snake[i - 1];
-    _snake[0] = head;
-
-    if (head == _apple) {
-        _score += 10;
-        _eat = true;
-        _snake.push_back(tail);
-        while (true) {
-            int nb = rand() % SIZE;
-            bool collision = false;
-            for (auto snake: _snake)
-                if (snake == nb) {
-                    collision = true;
-                    break;
-                }
-            if (!collision) {
-                _apple = nb;
-                break;
-            }
-        }
-    }
-
-    for (std::size_t i = 1; i < _snake.size(); i++)
-        if (_snake[0] == _snake[i]) {
-            std::vector<std::string> args;
-            exit(Signal::RestartGame, args);
-            return;
-        }
+    moveSnake(head);
 }
 
 std::pair<arc::Entities, arc::Sounds> arc::GameSnake::getElements() noexcept
@@ -269,6 +165,110 @@ arc::Vector2f arc::GameSnake::getPartPos(size_t part)
     float x = (float)(part % GRIDX) / GRIDX;
     float y = (part - (float)(part % GRIDX)) / GRIDX / GRIDY;
     return std::make_pair(x, y);
+}
+
+void arc::GameSnake::spawnApple()
+{
+    if (_snake.size() == GRIDX * GRIDY) {
+        exit(Signal::RestartGame, {});
+        return;
+    }
+    while (true) {
+        int nb = rand() % SIZE;
+        if (checkSnakeCollision(nb))
+            continue;
+        _apple = nb;
+        break;
+    }
+}
+
+bool arc::GameSnake::checkSnakeCollision(size_t idx)
+{
+    bool collision = false;
+
+    for (auto snake: _snake) {
+        if (snake == idx) {
+            collision = true;
+            continue;
+        }
+    }
+    return collision;
+}
+
+bool arc::GameSnake::moveHead(float angle, bool condition, int newPos,
+    std::reference_wrapper<size_t> head)
+{
+    bool quit = false;
+
+    if (_rotation == angle) {
+        if (condition)
+            head.get() += newPos;
+        else {
+            exit(Signal::RestartGame, {});
+            quit = true;
+        }
+    }
+    return quit;
+}
+
+void arc::GameSnake::changeDir()
+{
+    for (auto myevent: _events) {
+        auto action = myevent.first;
+        if ((action == Action::Z || action == Action::Up)
+            && _rotation != getAngle(Turn::Bottom))
+            _rotation = getAngle(Turn::Top);
+        if ((action == Action::S || action == Action::Down)
+            && _rotation != getAngle(Turn::Top))
+            _rotation = getAngle(Turn::Bottom);
+        if ((action == Action::Q || action == Action::Left)
+            && _rotation != getAngle(Turn::Right))
+            _rotation = getAngle(Turn::Left);
+        if ((action == Action::D || action == Action::Right)
+            && _rotation != getAngle(Turn::Left))
+            _rotation = getAngle(Turn::Right);
+    }
+    _events.clear();
+}
+
+bool arc::GameSnake::prevCheck(Event event)
+{
+    bool quit = false;
+    if (event.first == Action::Tab) {
+        std::vector<std::string> args;
+        exit(Signal::BackToMenu, args);
+        quit = true;
+    }
+    if (!quit) {
+        _events.push_back(event);
+        _tick++;
+        if (_tick == MOVETICK) {
+            _tick = 0;
+            changeDir();
+        } else
+            quit = true;
+    }
+    return quit;
+}
+
+void arc::GameSnake::moveSnake(size_t head)
+{
+    int tail = _snake.back();
+    for (int i = _snake.size() - 1; i > 0; i--)
+        _snake[i] = _snake[i - 1];
+    _snake[0] = head;
+    if (head == _apple) {
+        _score += GAIN;
+        _eat = true;
+        _snake.push_back(tail);
+        spawnApple();
+    }
+    for (std::size_t i = 1; i < _snake.size(); i++) {
+        if (_snake[0] == _snake[i]) {
+            exit(Signal::RestartGame, {});
+            break;
+        }
+    }
 }
 
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameSnake::_assets = {
