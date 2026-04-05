@@ -17,19 +17,32 @@ namespace arc {
     constexpr int GRIDX = 16;
     constexpr int GRIDY = 9;
     constexpr int SIZE = GRIDX * GRIDY;
+    constexpr std::array<float, 4> ANGLE = {0, 90, 180, 270};
 
     class GameSnake : public IGameModule {
         public:
             GameSnake();
             ~GameSnake() {};
 
-            enum class Box {
+            enum class SnakeAsset {
                 Head,
                 Tail,
                 Body,
                 Turn,
                 Apple,
                 None,
+            };
+
+            enum class Turn {
+                Top,
+                Right,
+                Bottom,
+                Left,
+            };
+
+            enum class SnakeSound {
+                Background,
+                PickUp,
             };
 
             void simulate(const Event) noexcept;
@@ -64,6 +77,7 @@ namespace arc {
             void drawTail(
                 std::reference_wrapper<Entities> entities, size_t idx);
             Vector2f getPartPos(size_t part);
+            float getAngle(Turn turn) {return ANGLE[static_cast<size_t>(turn)];}
     };
 }
 
