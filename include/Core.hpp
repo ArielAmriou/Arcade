@@ -19,6 +19,9 @@
 #define DEFAULT_GAME_PATH "lib/arcade_menu.so"
 
 namespace arc {
+    
+    constexpr std::string_view LIBDIR = "lib";
+
     class Core {
         public:
             Core(const std::string &);
