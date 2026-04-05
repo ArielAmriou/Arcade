@@ -95,6 +95,11 @@ namespace arc {
             void bombDiscovery();
             void updateClock();
             std::string nbTostring(std::size_t nb, std::size_t len);
+            void displayInfo(std::reference_wrapper<Entities>);
+            void mouseEvent(Event);
+            void revealTile(std::size_t idx);
+            void placeFlag(std::size_t idx);
+            bool preCheck(Event);
     };
 }
 
