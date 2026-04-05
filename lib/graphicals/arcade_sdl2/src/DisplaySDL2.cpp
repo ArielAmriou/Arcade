@@ -38,7 +38,7 @@ arc::Event arc::DisplaySDL2::getEvent() noexcept
     int x = 0;
     int y = 0;
     SDL_GetMouseState(&x, &y);
-    Vector2f pos = {x / WINX, y / WINY};
+    Vector2f pos = {(float)(x) / WINX, (float)(y) / WINY};
     Event value = {Action::None, pos};
     SDL_Event event;
     while (SDL_PollEvent(&event)) {

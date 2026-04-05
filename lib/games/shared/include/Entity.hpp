@@ -29,6 +29,8 @@ namespace arc {
                 : _idx(idx), _pos(pos), _size(size), _color(color), _str(str) {};
             Entity(int idx, Vector2f pos, Vector2f size, std::string str)
                 : _idx(idx), _pos(pos), _size(size), _str(str) {};
+            Entity(int idx, Vector2f pos, Vector2f size)
+                : _idx(idx), _pos(pos), _size(size) {};
             ~Entity() {};
 
             int getIdx() noexcept {return _idx;}
