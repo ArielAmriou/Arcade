@@ -15,13 +15,12 @@
 #include "IDisplayModule.hpp"
 #include "IGameModule.hpp"
 #include "Exceptions.hpp"
+#include "Utils.hpp"
 
 #define DEFAULT_GAME_PATH "lib/arcade_menu.so"
 
 namespace arc {
     
-    constexpr std::string_view LIBDIR = "lib";
-
     class Core {
         public:
             Core(const std::string &);
@@ -29,18 +28,20 @@ namespace arc {
             void play();
 
             static void help() noexcept;
-            void loadGameModule(const std::string &,
-                const std::exception &e=arc::exceptions::LibraryLoadError());
-            void loadDisplayModule(const std::string &,
-                const std::exception &e=arc::exceptions::LibraryLoadError());
+            void loadGameModule(const std::string &);
+            void loadDisplayModule(const std::string &);
             void execCommand(const std::vector<Command>);
+            void execBuiltin(const Action);
         
-            void loadDisplay(std::vector<std::string>);
-            void loadGame(std::vector<std::string>);
-            void restartGame(std::vector<std::string>);
-            void BackToMenu(std::vector<std::string>);
-            void loadUser(std::vector<std::string>);
-            void loadScore(std::vector<std::string>);
+            void loadDisplay(std::vector<std::string> = std::vector<std::string>());
+            void loadGame(std::vector<std::string> = std::vector<std::string>());
+            void restartGame(std::vector<std::string> = std::vector<std::string>());
+            void BackToMenu(std::vector<std::string> = std::vector<std::string>());
+            void loadUser(std::vector<std::string> = std::vector<std::string>());
+            void loadScore(std::vector<std::string> = std::vector<std::string>());
+
+            void iterDisplay();
+            void iterGame();
 
             void loadAssets();
         private:
@@ -50,8 +51,13 @@ namespace arc {
             std::string _gamePath = DEFAULT_GAME_PATH;
             std::string _displayPath;
             std::string _user = "___";
-
             std::unordered_map<arc::Signal, std::function<void(std::vector<std::string>)>> _commands;
+            std::unordered_map<arc::Action, std::function<void()>> _builtins;
+            SplitLibs _splitLibs;
+            std::size_t _gameIdx;
+            std::size_t _displayIdx;
+
+            void setFunctions();
 
     };
 }

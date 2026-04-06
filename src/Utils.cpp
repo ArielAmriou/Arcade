@@ -40,3 +40,14 @@ arc::SplitLibs arc::utils::getSplitLibs()
 {
     return splitLibs(getLibsPath());
 }
+
+int arc::utils::findLib(std::vector<std::string> list, std::string lib)
+{
+    int i = 0;
+    for (auto iter: list) {
+        if (iter == lib)
+            return i;
+        ++i;
+    }
+    return -1;
+}

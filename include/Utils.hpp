@@ -22,6 +22,7 @@ namespace arc {
     class utils {
         public:
             static SplitLibs getSplitLibs();
+            static int findLib(std::vector<std::string>, std::string);
         private:
             static std::vector<std::string> getLibsPath();
             static SplitLibs splitLibs(std::vector<std::string> libs);
