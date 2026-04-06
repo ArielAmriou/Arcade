@@ -51,10 +51,10 @@ void arc::Core::setFunctions()
     _commands[arc::Signal::LoadUser] = [this](std::vector<std::string> list) {loadUser(list);};
     _commands[arc::Signal::LoadScore] = [this](std::vector<std::string> list) {loadScore(list);};
 
-    _builtins[arc::Action::Num1] = [this]() {BackToMenu();};
-    _builtins[arc::Action::Num2] = [this]() {restartGame();};
-    _builtins[arc::Action::Num3] = [this]() {iterGame();};
-    _builtins[arc::Action::Num4] = [this]() {iterDisplay();};
+    _builtins[arc::Action::F1] = [this]() {BackToMenu();};
+    _builtins[arc::Action::F2] = [this]() {restartGame();};
+    _builtins[arc::Action::F3] = [this]() {iterGame();};
+    _builtins[arc::Action::Tab] = [this]() {iterDisplay();};
 }
 
 void arc::Core::loadGameModule(const std::string &path) {
@@ -121,6 +121,7 @@ void arc::Core::loadDisplay(std::vector<std::string> args)
         if (args.size() && _displayPath != args.front()) {
             loadDisplayModule(args.front());
             loadAssets();
+            _displayIdx = arc::utils::findLib(_splitLibs.first, args.front());
             _displayPath = args.front();
         }
     } catch (const std::exception &e) {
@@ -135,6 +136,7 @@ void arc::Core::loadGame(std::vector<std::string> args)
             loadGameModule(args.front());
             loadAssets();
             _gamePath = args.front();
+            _gameIdx = arc::utils::findLib(_splitLibs.second, args.front());
         }
     } catch (const std::exception &e) {
         throw e;
@@ -145,6 +147,7 @@ void arc::Core::restartGame(std::vector<std::string>)
 {
     try {
         loadGameModule(_gamePath);
+        loadAssets();
     } catch (const std::exception &e) {
         throw e;
     }
@@ -155,6 +158,7 @@ void arc::Core::BackToMenu(std::vector<std::string>)
     try {
         loadGameModule(DEFAULT_GAME_PATH);
         loadAssets();
+        _gameIdx = arc::utils::findLib(_splitLibs.second, DEFAULT_GAME_PATH);
     } catch (const std::exception &e) {
         throw e;
     }

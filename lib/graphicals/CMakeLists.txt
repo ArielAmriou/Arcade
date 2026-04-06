@@ -40,8 +40,21 @@ target_include_directories(${NCURSES} PRIVATE ${SHARED} ${NCURSES}/include/)
 target_link_libraries(${NCURSES} ncurses)
 set_target_properties(${NCURSES} PROPERTIES PREFIX "")
 
+set(SFML
+    arcade_sfml
+)
+
+set(SRCS_SFML
+    ${SFML}/src/DisplaySFML.cpp
+)
+
+add_library(${SFML} SHARED ${SRCS_SFML})
+target_include_directories(${SFML} PRIVATE ${SHARED} ${SFML}/include/)
+target_link_libraries(${SFML} sfml-graphics sfml-window sfml-system sfml-audio)
+set_target_properties(${SFML} PROPERTIES PREFIX "")
+
 add_custom_target(move ALL
-    DEPENDS ${SDL2} ${NCURSES}
+    DEPENDS ${SDL2} ${NCURSES} ${SFML}
     COMMAND mv *.so ../
 )
 

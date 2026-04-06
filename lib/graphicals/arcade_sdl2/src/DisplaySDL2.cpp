@@ -16,7 +16,7 @@ arc::DisplaySDL2::DisplaySDL2()
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_WAVPACK);
     TTF_Init();
-    _window = SDL_CreateWindow("SDL2 Displaying Image", SDL_WINDOWPOS_UNDEFINED,
+    _window = SDL_CreateWindow("SDL2 graphical library", SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED, WINX, WINY, 0);
     _renderer = SDL_CreateRenderer(_window, -1, 0);
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
