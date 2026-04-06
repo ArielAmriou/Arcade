@@ -39,13 +39,13 @@ namespace arc {
 
                 symbol = dlsym(_handle, "makeInstance");
                 if (symbol == nullptr)
-                    throw arc::exceptions::NoEntryPoint();
+                    throw arc::exceptions::LibraryLoadError(dlerror());
                 auto makeInstance = reinterpret_cast<std::unique_ptr<T> (*)(void)>(symbol);
                 if (makeInstance == nullptr)
                     throw arc::exceptions::LibraryLoadError();
                 auto tmp = makeInstance();
                 if (tmp == nullptr)
-                    throw arc::exceptions::NoEntryPoint();
+                    throw arc::exceptions::LibraryLoadError(dlerror());
                 return tmp;
             }
 

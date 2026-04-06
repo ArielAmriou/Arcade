@@ -17,8 +17,13 @@ arc::Core::Core(const std::string &path): _displayPath(path) {
     _loader.reset(path);
     try {
         auto display = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
-        if (!display.has_value())
-            throw arc::exceptions::NotGraphical();
+        auto err = dlerror();
+        if (!display.has_value()) {
+            if (err)
+                throw arc::exceptions::LibraryLoadError(err);
+            else
+                throw arc::exceptions::NotGraphical();
+        }
         display.value().swap(_display);
 
         loadGameModule(DEFAULT_GAME_PATH);
@@ -46,18 +51,20 @@ void arc::Core::setFunctions()
     _commands[arc::Signal::LoadUser] = [this](std::vector<std::string> list) {loadUser(list);};
     _commands[arc::Signal::LoadScore] = [this](std::vector<std::string> list) {loadScore(list);};
 
-    _builtins[arc::Action::M] = [this]() {BackToMenu();};
-    _builtins[arc::Action::R] = [this]() {restartGame();};
-    _builtins[arc::Action::G] = [this]() {iterGame();};
-    _builtins[arc::Action::D] = [this]() {iterDisplay();};
+    _builtins[arc::Action::Num1] = [this]() {BackToMenu();};
+    _builtins[arc::Action::Num2] = [this]() {restartGame();};
+    _builtins[arc::Action::Num3] = [this]() {iterGame();};
+    _builtins[arc::Action::Num4] = [this]() {iterDisplay();};
 }
 
 void arc::Core::loadGameModule(const std::string &path) {
     _splitLibs = arc::utils::getSplitLibs();
     _loader.reset(path);
     auto game = _loader.makeInstance<IGameModule>(arc::LibType::Game);
+    auto err = dlerror();
     if (!game.has_value())
-        throw arc::exceptions::NoEntryPoint();
+        throw (err ? arc::exceptions::LibraryLoadError(err) :
+            arc::exceptions::LibraryLoadError());
     game.value().swap(_game);
     _gameIdx = arc::utils::findLib(_splitLibs.second, path);
 }
@@ -66,8 +73,10 @@ void arc::Core::loadDisplayModule(const std::string &path) {
     _splitLibs = arc::utils::getSplitLibs();
     _loader.reset(path);
     auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
+    auto err = dlerror();
     if (!disp.has_value())
-        throw arc::exceptions::NoEntryPoint();
+        throw (err ? arc::exceptions::LibraryLoadError(err) :
+            arc::exceptions::LibraryLoadError());
     disp.value().swap(_display);
     _displayIdx = arc::utils::findLib(_splitLibs.first, path);
 }

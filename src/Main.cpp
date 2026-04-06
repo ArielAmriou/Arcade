@@ -28,9 +28,6 @@ int main(const int ac, const char **av)
         } catch (const arc::exceptions::LibraryLoadError &e) {
             std::cerr << e.what() << std::endl;
             status = EPIERROR;
-        } catch (const arc::exceptions::NoEntryPoint &e) {
-            std::cerr << e.what() << std::endl;
-            status = EPIERROR;
         }
     }
     return status;

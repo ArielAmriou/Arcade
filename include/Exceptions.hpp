@@ -21,12 +21,16 @@ namespace arc {
 
         class LibraryLoadError : public std::exception {
             public:
-                const char* what() const throw() { return "Unexpected error while loading library"; }
-        };
-
-        class NoEntryPoint : public std::exception {
-            public:
-                const char* what() const throw() { return "No entry point in dynamic library"; }
+                LibraryLoadError() = default;
+                LibraryLoadError(std::string msg): _msg(msg) {};
+                const char* what() const throw() {
+                    if (_msg.empty())
+                        return "Unexpected error while loading library.";
+                    return _msg.c_str();
+                }
+            private:
+                std::string _msg;
+            
         };
 
         class AssetLoadError : public std::exception {

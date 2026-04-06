@@ -65,5 +65,5 @@ file(GLOB_RECURSE LIBS
 )
 
 add_custom_target(clean_libs
-    COMMAND rm ${LIBS}
+    COMMAND rm -f ${LIBS}
 )

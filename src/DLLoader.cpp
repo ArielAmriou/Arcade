@@ -6,7 +6,6 @@
 */
 
 #include "DLLoader.hpp"
-#include "Exceptions.hpp"
 
 arc::DLLoader::DLLoader(const std::string &path) noexcept {
     _handle = dlopen(path.data(), RTLD_LAZY);
@@ -25,9 +24,9 @@ arc::LibType arc::DLLoader::getLibType()
 {
     void *symbol = dlsym(_handle, "getLibType");
     if (symbol == nullptr)
-        throw arc::exceptions::NoEntryPoint();
+        throw arc::exceptions::LibraryLoadError(dlerror());
     auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
     if (getLibType() == arc::LibType::None)
-        throw arc::exceptions::NoEntryPoint();
+        throw arc::exceptions::LibraryLoadError(dlerror());
     return getLibType();
 }
