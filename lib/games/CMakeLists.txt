@@ -40,7 +40,19 @@ add_library(${MENU} SHARED ${SRCS_MENU} ${SRCS_SHARED})
 target_include_directories(${MENU} PRIVATE ${INCLUDE_SHARED} ${MENU}/include/)
 set_target_properties(${MENU} PROPERTIES PREFIX "")
 
+set(MINESWEEPER
+    arcade_minesweeper
+)
+
+set(SRCS_MINESWEEPER
+    ${MINESWEEPER}/src/GameMinesweeper.cpp
+)
+
+add_library(${MINESWEEPER} SHARED ${SRCS_MINESWEEPER} ${SRCS_SHARED})
+target_include_directories(${MINESWEEPER} PRIVATE ${INCLUDE_SHARED} ${MINESWEEPER}/include/)
+set_target_properties(${MINESWEEPER} PROPERTIES PREFIX "")
+
 add_custom_target(move ALL
-    DEPENDS ${SNAKE} ${MENU}
+    DEPENDS ${SNAKE} ${MENU} ${MINESWEEPER}
     COMMAND mv *.so ../
 )
