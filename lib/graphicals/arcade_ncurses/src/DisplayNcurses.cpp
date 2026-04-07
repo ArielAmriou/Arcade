@@ -18,8 +18,8 @@ namespace arc {
         {BUTTON2_RELEASED, Action::MiddleMouse},
         {BUTTON3_RELEASED, Action::RightMouse},
         {BUTTON1_PRESSED, Action::LeftMouse},
-        {BUTTON1_PRESSED, Action::MiddleMouse},
-        {BUTTON1_PRESSED, Action::RightMouse},
+        {BUTTON2_PRESSED, Action::MiddleMouse},
+        {BUTTON3_PRESSED, Action::RightMouse},
     };
 
     const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
@@ -109,10 +109,10 @@ namespace arc {
     };
 
     const std::unordered_map<DisplayNcurses::Colors, std::tuple<int, int, int, int>> DisplayNcurses::_color {
-        {DisplayNcurses::Colors::Red, RED},
-        {DisplayNcurses::Colors::Blue, BLUE},
-        {DisplayNcurses::Colors::Green, GREEN},
-        {DisplayNcurses::Colors::White, WHITE},
+        {Colors::Red, RED},
+        {Colors::Blue, BLUE},
+        {Colors::Green, GREEN},
+        {Colors::White, WHITE},
     };
 
 
@@ -156,26 +156,33 @@ namespace arc {
         keypad(_window, TRUE);
         curs_set(0);
     }
-//Blanc = 256, noir = 000, sinon faire red green blue
+
     void DisplayNcurses::drawGame(const std::pair<Entities, Sounds> elements) noexcept
     {
         usleep(FRAMERATE);
         werase(_window);
-        /*beep();*/
         for (auto &entity: elements.first) {
             Colors color =  getColorId(entity);
             Vector2f pos = entity->getPos();
             wattron(_window, COLOR_PAIR(color));
-            if (entity->getIdx() >= 0 && entity->getIdx() < _assets.size())
-                mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
-                    static_cast<int>(pos.first * getmaxx(_window)), "%s",
+            if (entity->getIdx() >= 0 && entity->getIdx() < _assets.size()) {
+                mvwprintw(_window,
+                    static_cast<int>(pos.second * (getmaxy(_window)
+                        - PRINT_OFFSET)),
+                    static_cast<int>(pos.first * (getmaxx(_window)
+                        - PRINT_OFFSET)), "%s",
                     _assets[entity->getIdx()].data());
+            }
             if (entity->getStr())
-                mvwprintw(_window, static_cast<int>(pos.second * getmaxy(_window)),
+                mvwprintw(_window,
+                    static_cast<int>(pos.second * getmaxy(_window)),
                     static_cast<int>(pos.first * getmaxx(_window)), "%s",
                     entity->getStr()->data());
             wattroff(_window, COLOR_PAIR(color));
         }
+        for (auto& sound : elements.second)
+            if (!sound->isLoop())
+                beep();
         wrefresh(_window);
     }
 
@@ -206,17 +213,17 @@ namespace arc {
         const int getInput = wgetch(_window);
         Vector2f mousePos = {0, 0};
         const auto key = _keyMap.find(getInput);
+        int xOfset = getbegx(_window);
+        int yOfset = getbegy(_window);
         MEVENT eventMouse = {0};
         int isMouse = getmouse(&eventMouse);
 
-        if (isMouse == OK) {
-            mousePos.first  = static_cast<float>(eventMouse.x) / getmaxx(_window);
-            mousePos.second = static_cast<float>(eventMouse.y) / getmaxy(_window);
-        }
         if (getInput == KEY_MOUSE && isMouse == OK) {
+            mousePos.first  = static_cast<float>(eventMouse.x - xOfset) / (getmaxx(_window) - PRINT_OFFSET);
+            mousePos.second = static_cast<float>(eventMouse.y - yOfset) / (getmaxy(_window) - PRINT_OFFSET);
             const auto buttonPressed = _mouseButtonMapNcurses.find(eventMouse.bstate);
-                if (buttonPressed != _mouseButtonMapNcurses.end())
-                    return {buttonPressed->second, mousePos};
+            if (buttonPressed != _mouseButtonMapNcurses.end())
+                return {buttonPressed->second, mousePos};
         }
         if (key != _keyMap.end())
             return {key->second, mousePos};

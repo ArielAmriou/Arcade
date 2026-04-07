@@ -20,6 +20,7 @@
 #define RED std::tuple(255, 0, 0, 255)
 #define BLUE std::tuple(0, 0, 255, 255)
 #define GREEN std::tuple(0, 255, 0, 255)
+#define PRINT_OFFSET 1
 
 namespace arc {
 
