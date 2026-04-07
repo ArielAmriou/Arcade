@@ -16,10 +16,10 @@
 #define SUCCES 0
 #define FRAMERATE (1000000/30)
 #define ESC_CHARACTER 27
-#define DOWN_ARROW 0x42
-#define UP_ARROW 0x41
-#define RIGHT_ARROW 0x43
-#define LEFT_ARROW 0x44
+#define WHITE std::tuple(255, 255, 255, 255)
+#define RED std::tuple(255, 0, 0, 255)
+#define BLUE std::tuple(0, 0, 255, 255)
+#define GREEN std::tuple(0, 255, 0, 255)
 
 namespace arc {
 
@@ -27,10 +27,16 @@ namespace arc {
     public:
         DisplayNcurses();
         ~DisplayNcurses() override;
-
         [[nodiscard]] Event getEvent() noexcept;
         int setAssets(const Assets assets) noexcept;
         void drawGame(const std::pair<Entities, Sounds> elements) noexcept;
+        enum class Colors
+        {
+            White = 1,
+            Red = 2,
+            Green = 3,
+            Blue = 4,
+        };
 
     private:
         bool _quit = false;
@@ -38,6 +44,9 @@ namespace arc {
         std::vector<std::string> _assets;
         static const std::unordered_map<mmask_t, Action> _mouseButtonMapNcurses;
         static const std::unordered_map<int, Action> _keyMap;
+        static const std::unordered_map<Colors, std::tuple<int, int, int, int>> _color;
+        void initColors();
+        Colors getColorId(const std::unique_ptr<IEntity> &entity);
     };
 }
 
