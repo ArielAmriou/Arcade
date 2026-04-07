@@ -147,7 +147,6 @@ void arc::Core::restartGame(std::vector<std::string>)
 {
     try {
         loadGameModule(_gamePath);
-        loadAssets();
     } catch (const std::exception &e) {
         throw e;
     }

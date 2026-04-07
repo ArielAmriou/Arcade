@@ -1,2 +1,4 @@
 name,game,score
 ARI,lib/arcade_snake.so,40
+ETO,lib/arcade_snake.so,330
+ETO,lib/arcade_snake.so,10

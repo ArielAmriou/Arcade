@@ -56,14 +56,12 @@ int arc::DisplaySFML::setAssets(const Assets assets) noexcept
         _textures.push_back(texture);
     }
     for (auto path: assets.second) {
-        sf::SoundBuffer music;
-        try {
-            music.loadFromFile(path);
-        } catch (...) {
+        _buffers.push_back(sf::SoundBuffer{});
+        if (!_buffers[_buffers.size() - 1].loadFromFile(path)) {
             std::cerr << "loadFromFile failed for '" << path << "." << std::endl;
             return -1;
         }
-        _musics.push_back(music);
+        _sounds.push_back(std::make_shared<sf::Sound>(_buffers[_buffers.size() - 1]));
     }
     return 0;
 }
@@ -100,10 +98,15 @@ void arc::DisplaySFML::drawText(
         pos.first * WINX,
         pos.second * WINY
     });
+    auto cpy = str;
+    for (auto &c: cpy)
+        c = 'A';
+    text.setString(cpy);
+    sf::Vector2f scale;
+    scale.y = (size.second * WINY) / text.getLocalBounds().getSize().y;
     text.setString(str);
-    text.setScale(sf::Vector2f{
-        (size.first * WINX) / text.getLocalBounds().getSize().x,
-        (size.second * WINY) / text.getLocalBounds().getSize().y});
+    scale.x = (size.first * WINX) / text.getLocalBounds().getSize().x;
+    text.setScale(scale);
     _renderWindow.draw(text);
 }
 
@@ -114,16 +117,16 @@ void arc::DisplaySFML::drawImage(Vector2f pos, Vector2f size, int idx, float rot
     sprite.setTexture(_textures[idx]);
     sprite.setOrigin(sf::Vector2f{
         (float)texture_size.x / 2,
-        (float)texture_size.y / 2}
-    );
+        (float)texture_size.y / 2
+    });
     sprite.setRotation(rotation);
     sprite.setPosition(sf::Vector2f{
-        (pos.first * WINX) + ((float)texture_size.x / 2),
-        (pos.second * WINY) + ((float)texture_size.y / 2)
+        (pos.first * WINX) + ((size.first * WINX) / 2),
+        (pos.second * WINY) + ((size.second * WINY) / 2)
     });
     sprite.setScale(sf::Vector2f{
-        (size.first * WINX) / _textures[idx].getSize().x,
-        (size.second * WINY) / _textures[idx].getSize().y
+        (size.first * WINX) / (float)texture_size.x,
+        (size.second * WINY) / (float)texture_size.y
     });
     sprite.setColor(sf::Color(std::get<0>(color), std::get<1>(color), std::get<2>(color), std::get<3>(color)));
     _renderWindow.draw(sprite);
@@ -146,11 +149,10 @@ void arc::DisplaySFML::drawGame(const std::pair<Entities, Sounds> elements) noex
     }
     for (auto& elem : elements.second) {
         int idx = elem->getIdx();
-        if (idx >= 0 && idx < _musics.size()) {
-            sf::Sound sound(_musics[idx]);
-            auto isLoop = elem->isLoop();
-            sound.setLoop(isLoop);
-            sound.play();
+        if (idx >= 0 && idx < _sounds.size()) {
+            std::cout << idx << std::endl;
+            _sounds[idx]->setLoop(elem->isLoop());
+            _sounds[idx]->play();
         }
     }
     usleep(1000000 / 60);
@@ -160,7 +162,8 @@ void arc::DisplaySFML::drawGame(const std::pair<Entities, Sounds> elements) noex
 void arc::DisplaySFML::freeAsset()
 {
     _textures.clear();
-    _musics.clear();
+    _buffers.clear();
+    _sounds.clear();
 }
 
 const std::unordered_map<sf::Keyboard::Key, arc::Action> arc::DisplaySFML::_keyMap = {

@@ -15,9 +15,9 @@
 #include <string>
 #include <optional>
 #include <memory>
+#include <iostream>
 #include "Arcade.hpp"
 #include "Exceptions.hpp"
-#include <iostream>
 
 namespace arc {
     class DLLoader {

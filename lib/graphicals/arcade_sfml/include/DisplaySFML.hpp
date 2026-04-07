@@ -12,7 +12,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <unordered_map>
-#include <utility> 
+#include <utility>
 #include "IDisplayModule.hpp"
 
 namespace arc {
@@ -42,8 +42,9 @@ namespace arc {
             static const std::unordered_map<sf::Keyboard::Key, Action> _keyMap;
             static const std::unordered_map<int, Action> _mouseButtonMap;
             std::vector<sf::Texture> _textures;
-            std::vector<sf::SoundBuffer> _musics;
-            
+            std::vector<sf::SoundBuffer> _buffers;
+            std::vector<std::shared_ptr<sf::Sound>> _sounds;
+
             void freeAsset();
             void drawText(Vector2f pos, Vector2f size, std::string str, RGBA color);
             void drawImage(Vector2f pos, Vector2f size, int idx, float rotation, RGBA color);
