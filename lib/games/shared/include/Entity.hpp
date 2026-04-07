@@ -19,7 +19,7 @@ namespace arc {
     constexpr RGBA WHITE = std::make_tuple(255, 255, 255, 255);
     constexpr RGBA RED = std::make_tuple(255, 0, 0, 255);
     constexpr RGBA BLUE = std::make_tuple(0, 0, 255, 255);
-    constexpr RGBA GREEN = std::make_tuple(0, 255, 0, 255);
+        constexpr RGBA GREEN = std::make_tuple(0, 255, 0, 255);
 
     class Entity : public IEntity {
         public:
