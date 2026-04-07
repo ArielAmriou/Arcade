@@ -28,6 +28,19 @@ namespace arc {
             void play();
 
             static void help() noexcept;
+        private:
+            DLLoader _loader;
+            std::unique_ptr<IGameModule> _game;
+            std::unique_ptr<IDisplayModule> _display;
+            std::string _gamePath = DEFAULT_GAME_PATH;
+            std::string _displayPath;
+            std::string _user = "___";
+            std::unordered_map<arc::Signal, std::function<void(std::vector<std::string>)>> _commands;
+            std::unordered_map<arc::Action, std::function<void()>> _builtins;
+            SplitLibs _splitLibs;
+            std::size_t _gameIdx;
+            std::size_t _displayIdx;
+
             void loadGameModule(const std::string &);
             void loadDisplayModule(const std::string &);
             void execCommand(const std::vector<Command>);
@@ -44,18 +57,6 @@ namespace arc {
             void iterGame();
 
             void loadAssets();
-        private:
-            DLLoader _loader;
-            std::unique_ptr<IGameModule> _game;
-            std::unique_ptr<IDisplayModule> _display;
-            std::string _gamePath = DEFAULT_GAME_PATH;
-            std::string _displayPath;
-            std::string _user = "___";
-            std::unordered_map<arc::Signal, std::function<void(std::vector<std::string>)>> _commands;
-            std::unordered_map<arc::Action, std::function<void()>> _builtins;
-            SplitLibs _splitLibs;
-            std::size_t _gameIdx;
-            std::size_t _displayIdx;
 
             void setFunctions();
 
