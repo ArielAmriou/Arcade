@@ -21,11 +21,11 @@ namespace arc {
 
     class utils {
         public:
-            static SplitLibs getSplitLibs();
-            static int findLib(std::vector<std::string>, std::string);
+            static SplitLibs getSplitLibs() noexcept;
+            static int findLib(std::vector<std::string>, std::string) noexcept;
         private:
-            static std::vector<std::string> getLibsPath();
-            static SplitLibs splitLibs(std::vector<std::string> libs);
+            static std::vector<std::string> getLibsPath() noexcept;
+            static SplitLibs splitLibs(std::vector<std::string> libs) noexcept;
     };
 }
 

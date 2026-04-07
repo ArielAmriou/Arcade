@@ -150,7 +150,6 @@ void arc::DisplaySFML::drawGame(const std::pair<Entities, Sounds> elements) noex
     for (auto& elem : elements.second) {
         int idx = elem->getIdx();
         if (idx >= 0 && idx < _sounds.size()) {
-            std::cout << idx << std::endl;
             _sounds[idx]->setLoop(elem->isLoop());
             _sounds[idx]->play();
         }

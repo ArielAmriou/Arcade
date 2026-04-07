@@ -9,7 +9,7 @@
 #include "DLLoader.hpp"
 #include <filesystem>
 
-std::vector<std::string> arc::utils::getLibsPath()
+std::vector<std::string> arc::utils::getLibsPath() noexcept
 {
     std::vector<std::string> list;
 
@@ -22,7 +22,7 @@ std::vector<std::string> arc::utils::getLibsPath()
     return list;
 }
 
-arc::SplitLibs arc::utils::splitLibs(std::vector<std::string> libs)
+arc::SplitLibs arc::utils::splitLibs(std::vector<std::string> libs) noexcept
 {
     SplitLibs split;
 
@@ -36,12 +36,12 @@ arc::SplitLibs arc::utils::splitLibs(std::vector<std::string> libs)
     return split;
 }
 
-arc::SplitLibs arc::utils::getSplitLibs()
+arc::SplitLibs arc::utils::getSplitLibs() noexcept
 {
     return splitLibs(getLibsPath());
 }
 
-int arc::utils::findLib(std::vector<std::string> list, std::string lib)
+int arc::utils::findLib(std::vector<std::string> list, std::string lib) noexcept
 {
     int i = 0;
     for (auto iter: list) {
