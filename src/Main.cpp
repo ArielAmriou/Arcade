@@ -31,6 +31,9 @@ int main(const int ac, const char **av)
         } catch (const arc::exceptions::NoSuchLib &e) {
             std::cerr << e.what() << std::endl;
             status = EPIERROR;
+        } catch (const arc::exceptions::AssetLoadError &e) {
+            std::cerr << e.what() << std::endl;
+            status = EPIERROR;
         }
     }
     return status;
