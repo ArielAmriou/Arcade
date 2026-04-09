@@ -12,19 +12,21 @@
 #include "DLLoader.hpp"
 #include "Exceptions.hpp"
 
-arc::Core::Core(const std::string &path): _displayPath(path) {
+arc::Core::Core(const std::string &path) {
     setFunctions();
-    _loader.reset(path);
     try {
-        auto display = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
-        auto err = dlerror();
-        if (!display.has_value()) {
-            if (err)
-                throw arc::exceptions::LibraryLoadError(err);
-            else
-                throw arc::exceptions::NotGraphical();
-        }
-        display.value().swap(_display);
+       _splitLibs = arc::Utils::getSplitLibs();
+
+        for (const auto &display:_splitLibs.first)
+            _displayLoader.emplace_back(display);
+        for (const auto &game:_splitLibs.second)
+            _gameLoader.emplace_back(game);
+        
+        _displayIdx = arc::Utils::findLib(_splitLibs.first, path);
+        auto display = _displayLoader[_displayIdx].makeInstance<IDisplayModule>(arc::LibType::Display);
+        if (!display.has_value())
+            throw arc::exceptions::NotGraphical();
+        _display.reset(display.value().release());
 
         loadGameModule(DEFAULT_GAME_PATH);
     } catch (const arc::exceptions::LibraryLoadError &e) {
@@ -34,12 +36,6 @@ arc::Core::Core(const std::string &path): _displayPath(path) {
     } catch (...) {
         throw arc::exceptions::LibraryLoadError();
     }
-    auto displayIdx = arc::utils::findLib(_splitLibs.first, path);
-    auto gameIdx = arc::utils::findLib(_splitLibs.second, DEFAULT_GAME_PATH);
-    if (displayIdx == -1 || gameIdx == -1)
-        throw arc::exceptions::LibraryLoadError();
-    _displayIdx = displayIdx;
-    _gameIdx = gameIdx;
 }
 
 void arc::Core::setFunctions()
@@ -58,27 +54,21 @@ void arc::Core::setFunctions()
 }
 
 void arc::Core::loadGameModule(const std::string &path) {
-    _splitLibs = arc::utils::getSplitLibs();
-    _loader.reset(path);
-    auto game = _loader.makeInstance<IGameModule>(arc::LibType::Game);
-    auto err = dlerror();
+    _game.reset();
+    _gameIdx = arc::Utils::findLib(_splitLibs.second, path);
+    auto game = _gameLoader[_gameIdx].makeInstance<IGameModule>(arc::LibType::Game);
     if (!game.has_value())
-        throw (err ? arc::exceptions::LibraryLoadError(err) :
-            arc::exceptions::LibraryLoadError());
-    game.value().swap(_game);
-    _gameIdx = arc::utils::findLib(_splitLibs.second, path);
+        throw arc::exceptions::LibraryLoadError();
+    _game.reset(game.value().release());
 }
 
 void arc::Core::loadDisplayModule(const std::string &path) {
-    _splitLibs = arc::utils::getSplitLibs();
-    _loader.reset(path);
-    auto disp = _loader.makeInstance<IDisplayModule>(arc::LibType::Display);
-    auto err = dlerror();
-    if (!disp.has_value())
-        throw (err ? arc::exceptions::LibraryLoadError(err) :
-            arc::exceptions::LibraryLoadError());
-    disp.value().swap(_display);
-    _displayIdx = arc::utils::findLib(_splitLibs.first, path);
+    _display.reset();
+    _displayIdx = arc::Utils::findLib(_splitLibs.first, path);
+    auto display = _displayLoader[_displayIdx].makeInstance<IDisplayModule>(arc::LibType::Display);
+    if (!display.has_value())
+        throw arc::exceptions::LibraryLoadError();
+    _display.reset(display.value().release());
 }
 
 void arc::Core::execCommand(const std::vector<Command> commands)
@@ -118,11 +108,11 @@ void arc::Core::help() noexcept {
 void arc::Core::loadDisplay(std::vector<std::string> args)
 {
     try {
-        if (args.size() && _displayPath != args.front()) {
+        if (args.size() && _displayLoader[_displayIdx].getLibPath() != args.front()) {
             loadDisplayModule(args.front());
             loadAssets();
-            _displayIdx = arc::utils::findLib(_splitLibs.first, args.front());
-            _displayPath = args.front();
+            _displayIdx = arc::Utils::findLib(_splitLibs.first, args.front());
+            _displayLoader[_displayIdx].getLibPath() = args.front();
         }
     } catch (const std::exception &e) {
         throw e;
@@ -135,8 +125,7 @@ void arc::Core::loadGame(std::vector<std::string> args)
         if (args.size()) {
             loadGameModule(args.front());
             loadAssets();
-            _gamePath = args.front();
-            _gameIdx = arc::utils::findLib(_splitLibs.second, args.front());
+            _gameIdx = arc::Utils::findLib(_splitLibs.second, args.front());
         }
     } catch (const std::exception &e) {
         throw e;
@@ -146,7 +135,7 @@ void arc::Core::loadGame(std::vector<std::string> args)
 void arc::Core::restartGame(std::vector<std::string>)
 {
     try {
-        loadGameModule(_gamePath);
+        loadGameModule(_gameLoader[_gameIdx].getLibPath());
     } catch (const std::exception &e) {
         throw e;
     }
@@ -157,7 +146,7 @@ void arc::Core::BackToMenu(std::vector<std::string>)
     try {
         loadGameModule(DEFAULT_GAME_PATH);
         loadAssets();
-        _gameIdx = arc::utils::findLib(_splitLibs.second, DEFAULT_GAME_PATH);
+        _gameIdx = arc::Utils::findLib(_splitLibs.second, DEFAULT_GAME_PATH);
     } catch (const std::exception &e) {
         throw e;
     }
@@ -187,7 +176,7 @@ void arc::Core::loadScore(std::vector<std::string> args)
         tmp >> score;
         if (tmp.fail())
             return;
-        log << _user + "," + _gamePath + "," << score << "\n";
+        log << _user + "," + _gameLoader[_gameIdx].getLibPath() + "," << score << "\n";
     }
 }
 

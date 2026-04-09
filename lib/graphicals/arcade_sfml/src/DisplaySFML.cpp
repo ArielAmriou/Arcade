@@ -11,11 +11,13 @@
 
 arc::DisplaySFML::DisplaySFML(): _renderWindow(sf::VideoMode({WINX, WINY}), "SFML graphical library")
 {
+    std::cout << "Creating sfml display library" << std::endl;
     _font.loadFromFile(FONT_PATH.data());
 }
 
 arc::DisplaySFML::~DisplaySFML()
 {
+    std::cout << "Destroying sfml display library" << std::endl;
     freeAsset();
 }
 
@@ -53,7 +55,7 @@ int arc::DisplaySFML::setAssets(const Assets assets) noexcept
             std::cerr << "loadFromFile failed for '" << path << "." << std::endl;
             return -1;
         }
-        _textures.push_back(texture);
+        _textures.emplace_back(std::move(texture));
     }
     for (auto path: assets.second) {
         _buffers.push_back(sf::SoundBuffer{});
@@ -61,7 +63,7 @@ int arc::DisplaySFML::setAssets(const Assets assets) noexcept
             std::cerr << "loadFromFile failed for '" << path << "." << std::endl;
             return -1;
         }
-        _sounds.push_back(std::make_shared<sf::Sound>(_buffers[_buffers.size() - 1]));
+        _sounds.emplace_back(std::make_shared<sf::Sound>(_buffers[_buffers.size() - 1]));
     }
     return 0;
 }

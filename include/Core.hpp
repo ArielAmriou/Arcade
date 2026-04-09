@@ -29,11 +29,10 @@ namespace arc {
 
             static void help() noexcept;
         private:
-            DLLoader _loader;
+            std::vector<DLLoader> _gameLoader;
+            std::vector<DLLoader> _displayLoader;
             std::unique_ptr<IGameModule> _game;
             std::unique_ptr<IDisplayModule> _display;
-            std::string _gamePath = DEFAULT_GAME_PATH;
-            std::string _displayPath;
             std::string _user = "___";
             std::unordered_map<arc::Signal, std::function<void(std::vector<std::string>)>> _commands;
             std::unordered_map<arc::Action, std::function<void()>> _builtins;

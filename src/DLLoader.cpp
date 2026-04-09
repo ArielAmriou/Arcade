@@ -7,21 +7,19 @@
 
 #include "DLLoader.hpp"
 
-arc::DLLoader::DLLoader(const std::string &path) noexcept {
-    _handle = dlopen(path.data(), RTLD_LAZY);
-}
+arc::DLLoader::DLLoader(const std::string &path) noexcept:
+    _handle(dlopen(path.data(), RTLD_LAZY)), _path(path) {}
 
-arc::DLLoader::~DLLoader() {
+arc::DLLoader::~DLLoader()
+{
     if (_handle != nullptr)
         dlclose(_handle);
 }
 
-void arc::DLLoader::reset(const std::string &path) noexcept {
-    _handle = dlopen(path.data(), RTLD_LAZY);
-}
-
 arc::LibType arc::DLLoader::getLibType()
 {
+    if (_handle == nullptr)
+        throw arc::exceptions::LibraryLoadError();
     void *symbol = dlsym(_handle, "getLibType");
     if (symbol == nullptr)
         throw arc::exceptions::LibraryLoadError(dlerror());
@@ -29,4 +27,17 @@ arc::LibType arc::DLLoader::getLibType()
     if (getLibType() == arc::LibType::None)
         throw arc::exceptions::LibraryLoadError(dlerror());
     return getLibType();
+}
+
+std::string arc::DLLoader::getLibPath()
+{
+    return _path;
+}
+
+arc::DLLoader::DLLoader(DLLoader&& obj)
+{
+    _handle = obj._handle;
+    _path = obj._path;
+    obj._handle = nullptr;
+    obj._path.clear();
 }

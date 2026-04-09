@@ -7,17 +7,15 @@
 
 #include <filesystem>
 #include <string>
+#include <iostream>
 #include "DLLoader.hpp"
 #include "GameMenu.hpp"
 #include "Entity.hpp"
 #include "Sound.hpp"
 
-#include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
-
 arc::GameMenu::GameMenu()
 {
-    _splitLibs = arc::utils::getSplitLibs();
+    _splitLibs = arc::Utils::getSplitLibs();
 }
 
 void arc::GameMenu::simulate(const Event event) noexcept
