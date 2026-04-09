@@ -16,13 +16,13 @@ namespace arc {
 
         class NotGraphical : public std::exception {
             public:
-                const char* what() const throw() { return "Not a graphical library"; }
+                const char* what() const throw() { return "Not a graphical library."; }
         };
 
         class LibraryLoadError : public std::exception {
             public:
                 LibraryLoadError() = default;
-                LibraryLoadError(std::string msg): _msg(msg) {};
+                LibraryLoadError(const std::string &msg): _msg(msg) {};
                 const char* what() const throw() {
                     if (_msg.empty())
                         return "Unexpected error while loading library.";
@@ -35,7 +35,15 @@ namespace arc {
 
         class AssetLoadError : public std::exception {
             public:
-                const char* what() const throw() { return "Error while loading assets"; }
+                const char* what() const throw() { return "Error while loading assets."; }
+        };
+
+        class NoSuchLib : public std::exception {
+            public:
+                NoSuchLib(const std::string &path): _msg(path + ": no such dynamic library.") {};
+                const char* what() const throw() { return _msg.c_str(); }
+            private:
+                std::string _msg;
         };
     }
 

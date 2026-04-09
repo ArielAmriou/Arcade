@@ -15,13 +15,13 @@
 arc::Core::Core(const std::string &path) {
     setFunctions();
     try {
-       _splitLibs = arc::Utils::getSplitLibs();
+        _splitLibs = arc::Utils::getSplitLibs();
 
         for (const auto &display:_splitLibs.first)
             _displayLoader.emplace_back(display);
         for (const auto &game:_splitLibs.second)
             _gameLoader.emplace_back(game);
-        
+
         _displayIdx = arc::Utils::findLib(_splitLibs.first, path);
         auto display = _displayLoader[_displayIdx].makeInstance<IDisplayModule>(arc::LibType::Display);
         if (!display.has_value())
@@ -32,6 +32,8 @@ arc::Core::Core(const std::string &path) {
     } catch (const arc::exceptions::LibraryLoadError &e) {
         throw e;
     } catch (const arc::exceptions::NotGraphical &e) {
+        throw e;
+    } catch (const arc::exceptions::NoSuchLib &e) {
         throw e;
     } catch (...) {
         throw arc::exceptions::LibraryLoadError();

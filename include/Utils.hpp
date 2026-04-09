@@ -22,7 +22,7 @@ namespace arc {
     class Utils {
         public:
             static SplitLibs getSplitLibs() noexcept;
-            static int findLib(std::vector<std::string>, std::string) noexcept;
+            static std::size_t findLib(std::vector<std::string>, std::string);
             static std::vector<std::string> getLibsPath() noexcept;
         private:
             static SplitLibs splitLibs(std::vector<std::string> libs) noexcept;

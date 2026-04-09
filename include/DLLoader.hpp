@@ -22,7 +22,7 @@
 namespace arc {
     class DLLoader {
         public:
-            DLLoader(const std::string &path) noexcept;
+            DLLoader(const std::string &path);
             ~DLLoader();
 
             DLLoader(DLLoader&& obj);
@@ -32,11 +32,14 @@ namespace arc {
                 try {
                     if (getLibType() != expected)
                         return {};
-                } catch (...) {
-                    return {};
+                } catch (const arc::exceptions::LibraryLoadError &e) {
+                    throw e;
                 }
 
                 void *symbol = dlsym(_handle, "makeInstance");
+                auto err = dlerror();
+                if (err)
+                    throw arc::exceptions::LibraryLoadError(err);
                 if (symbol == nullptr)
                     throw arc::exceptions::LibraryLoadError(dlerror());
                 auto makeInstance = reinterpret_cast<std::unique_ptr<T> (*)(void)>(symbol);

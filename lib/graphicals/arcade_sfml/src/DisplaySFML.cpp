@@ -66,7 +66,6 @@ int arc::DisplaySFML::setAssets(const Assets assets) noexcept
     return 0;
 }
 
-
 void arc::DisplaySFML::drawRect(
     Vector2f pos, Vector2f size, float rotation, RGBA color)
 {

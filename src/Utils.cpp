@@ -25,12 +25,16 @@ std::vector<std::string> arc::Utils::getLibsPath() noexcept
 arc::SplitLibs arc::Utils::splitLibs(std::vector<std::string> libs) noexcept
 {
     SplitLibs split;
+    LibType type = arc::LibType::None;
 
     for (auto lib: libs) {
-        DLLoader loader(lib);
-        if (loader.getLibType() == arc::LibType::Display)
+        try {
+            DLLoader loader(lib);
+            type = loader.getLibType();
+        } catch (...) {}
+        if (type == arc::LibType::Display)
             split.first.push_back(lib);
-        else
+        else if (type == arc::LibType::Game)
             split.second.push_back(lib);
     }
     return split;
@@ -41,13 +45,13 @@ arc::SplitLibs arc::Utils::getSplitLibs() noexcept
     return splitLibs(getLibsPath());
 }
 
-int arc::Utils::findLib(std::vector<std::string> list, std::string lib) noexcept
+std::size_t arc::Utils::findLib(std::vector<std::string> list, std::string lib)
 {
-    int i = 0;
+    std::size_t i = 0;
     for (auto iter: list) {
         if (iter == lib)
             return i;
         ++i;
     }
-    return -1;
+    throw arc::exceptions::NoSuchLib(lib);
 }

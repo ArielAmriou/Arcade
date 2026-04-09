@@ -7,8 +7,13 @@
 
 #include "DLLoader.hpp"
 
-arc::DLLoader::DLLoader(const std::string &path) noexcept:
-    _handle(dlopen(path.data(), RTLD_LAZY)), _path(path) {}
+arc::DLLoader::DLLoader(const std::string &path):
+    _handle(dlopen(path.data(), RTLD_LAZY)), _path(path)
+{
+    auto err = dlerror();
+    if (err)
+        throw arc::exceptions::LibraryLoadError(err);
+}
 
 arc::DLLoader::~DLLoader()
 {
@@ -22,10 +27,13 @@ arc::LibType arc::DLLoader::getLibType()
         throw arc::exceptions::LibraryLoadError();
     void *symbol = dlsym(_handle, "getLibType");
     if (symbol == nullptr)
-        throw arc::exceptions::LibraryLoadError(dlerror());
+        throw arc::exceptions::LibraryLoadError();
+    auto err = dlerror();
+    if (err)
+        throw arc::exceptions::LibraryLoadError(err);
     auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
     if (getLibType() == arc::LibType::None)
-        throw arc::exceptions::LibraryLoadError(dlerror());
+        throw arc::exceptions::LibraryLoadError();
     return getLibType();
 }
 
