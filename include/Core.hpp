@@ -48,7 +48,7 @@ namespace arc {
             void loadDisplay(std::vector<std::string> = std::vector<std::string>());
             void loadGame(std::vector<std::string> = std::vector<std::string>());
             void restartGame(std::vector<std::string> = std::vector<std::string>());
-            void BackToMenu(std::vector<std::string> = std::vector<std::string>());
+            void backToMenu(std::vector<std::string> = std::vector<std::string>());
             void loadUser(std::vector<std::string> = std::vector<std::string>());
             void loadScore(std::vector<std::string> = std::vector<std::string>());
 

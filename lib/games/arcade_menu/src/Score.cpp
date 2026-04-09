@@ -8,10 +8,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "Score.hpp"
-
 #include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
+#include "Score.hpp"
 
 arc::Score::Score()
 {

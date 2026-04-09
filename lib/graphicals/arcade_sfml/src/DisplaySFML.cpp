@@ -11,13 +11,11 @@
 
 arc::DisplaySFML::DisplaySFML(): _renderWindow(sf::VideoMode({WINX, WINY}), "SFML graphical library")
 {
-    std::cout << "Creating sfml display library" << std::endl;
     _font.loadFromFile(FONT_PATH.data());
 }
 
 arc::DisplaySFML::~DisplaySFML()
 {
-    std::cout << "Destroying sfml display library" << std::endl;
     freeAsset();
 }
 

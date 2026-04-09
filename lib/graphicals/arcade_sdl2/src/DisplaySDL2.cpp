@@ -21,7 +21,6 @@ arc::DisplaySDL2::DisplaySDL2()
     _renderer = SDL_CreateRenderer(_window, -1, 0);
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     _font = TTF_OpenFont("assets/SDL2/font.ttf", 25);
-    std::cout << "Creating sdl2 display library" << std::endl;
 }
 
 arc::DisplaySDL2::~DisplaySDL2()
@@ -32,7 +31,6 @@ arc::DisplaySDL2::~DisplaySDL2()
     Mix_Quit();
     IMG_Quit();
     SDL_Quit();
-    std::cout << "Destroying sdl2 display library" << std::endl;
 }
 
 arc::Event arc::DisplaySDL2::getEvent() noexcept

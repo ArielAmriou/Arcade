@@ -6,7 +6,7 @@
 */
 
 #include <cstdlib> 
-#include <ctime> 
+#include <ctime>
 #include "GameSnake.hpp"
 #include "Entity.hpp"
 #include "Sound.hpp"

@@ -43,14 +43,14 @@ void arc::Core::setFunctions()
     _commands[arc::Signal::LoadDisplay] = [this](std::vector<std::string> list) {loadDisplay(list);};
     _commands[arc::Signal::LoadGame] = [this](std::vector<std::string> list) {loadGame(list);};
     _commands[arc::Signal::RestartGame] = [this](std::vector<std::string> list) {restartGame(list);};
-    _commands[arc::Signal::BackToMenu] = [this](std::vector<std::string> list) {BackToMenu(list);};
+    _commands[arc::Signal::BackToMenu] = [this](std::vector<std::string> list) {backToMenu(list);};
     _commands[arc::Signal::LoadUser] = [this](std::vector<std::string> list) {loadUser(list);};
     _commands[arc::Signal::LoadScore] = [this](std::vector<std::string> list) {loadScore(list);};
 
-    _builtins[arc::Action::F1] = [this]() {BackToMenu();};
+    _builtins[arc::Action::F1] = [this]() {backToMenu();};
     _builtins[arc::Action::F2] = [this]() {restartGame();};
     _builtins[arc::Action::F3] = [this]() {iterGame();};
-    _builtins[arc::Action::Tab] = [this]() {iterDisplay();};
+    _builtins[arc::Action::Equal] = [this]() {iterDisplay();};
 }
 
 void arc::Core::loadGameModule(const std::string &path) {
@@ -141,7 +141,7 @@ void arc::Core::restartGame(std::vector<std::string>)
     }
 }
 
-void arc::Core::BackToMenu(std::vector<std::string>)
+void arc::Core::backToMenu(std::vector<std::string>)
 {
     try {
         loadGameModule(DEFAULT_GAME_PATH);
@@ -182,18 +182,20 @@ void arc::Core::loadScore(std::vector<std::string> args)
 
 void arc::Core::iterDisplay()
 {
-    ++_displayIdx;
-    if (_displayIdx >= _splitLibs.first.size())
-        _displayIdx = 0;
-    std::vector<std::string> tmp = {_splitLibs.first[_displayIdx]};
+    auto idx = _displayIdx;
+    ++idx;
+    if (idx >= _splitLibs.first.size())
+        idx = 0;
+    std::vector<std::string> tmp = {_splitLibs.first[idx]};
     loadDisplay(tmp);
 }
 
 void arc::Core::iterGame()
 {
-    ++_gameIdx;
-    if (_gameIdx >= _splitLibs.second.size())
-        _gameIdx = 0;
-    std::vector<std::string> tmp = {_splitLibs.second[_gameIdx]};
+    auto idx = _gameIdx;
+    ++idx;
+    if (idx >= _splitLibs.second.size())
+        idx = 0;
+    std::vector<std::string> tmp = {_splitLibs.second[idx]};
     loadGame(tmp);
 }
