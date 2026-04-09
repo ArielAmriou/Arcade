@@ -30,7 +30,7 @@ void arc::GameMinesweeper::simulate(const Event event) noexcept
         if (!_win && _score >= MAXSCORE) {
             _win = true;
             _score *= MAXTIME - _totalTime;
-            _play[static_cast<size_t>(MSSound::Winner)] = true;
+            _play[MSSound::Winner] = true;
             std::vector<std::string> argsScore = {std::to_string(_score)};
             _commands.push_back(std::make_pair(Signal::LoadScore, argsScore));
             return;
@@ -41,7 +41,7 @@ void arc::GameMinesweeper::simulate(const Event event) noexcept
 
 arc::Assets arc::GameMinesweeper::getAssets() noexcept
 {
-    _play[static_cast<size_t>(MSSound::Background)] = true;
+    _play[MSSound::Background] = true;
     return _assets;
 }
 
@@ -53,14 +53,14 @@ std::pair<arc::Entities, arc::Sounds>
 
     displayInfo(entities);
     for (std::size_t i = 0; i < GRIDTOTAL; i++) {
-        Entity box(static_cast<size_t>(_showGrid[i]), getTilePos(i),
+        Entity box(_showGrid[i], getTilePos(i),
             {1.0 / DISPLAYX, 1.0 / DISPLAYY});
         entities.push_back(std::make_unique<arc::Entity>(box));
     }
-    if (_play[static_cast<size_t>(MSSound::Background)]) {
-        Sound background(static_cast<size_t>(MSSound::Background), true);
+    if (_play[MSSound::Background]) {
+        Sound background(MSSound::Background, true);
         sounds.push_back(std::make_unique<arc::Sound>(background));
-        _play[static_cast<size_t>(MSSound::Background)] = false;
+        _play[MSSound::Background] = false;
     }
     for (std::size_t i = 1; i < _play.size(); i++) {
         if (_play[i]) {
@@ -197,19 +197,19 @@ arc::GameMinesweeper::MSAsset arc::GameMinesweeper::discoverTile(
 
 void arc::GameMinesweeper::bombDiscovery()
 {
-    if (_bombClock < 0.4)
+    if (_bombClock < EXPLOSIONGAP)
         return;
     _bombClock = 0;
     for (size_t i = 0; i < GRIDTOTAL; i++) {
         if (_actualGrid[i] == MSAsset::Bomb && _showGrid[i] != MSAsset::Bomb
             && _showGrid[i] != MSAsset::Flag) {
             _showGrid[i] = MSAsset::Bomb;
-            _play[static_cast<size_t>(MSSound::Explosion)] = true;
+            _play[MSSound::Explosion] = true;
             break;
         }
         if (_actualGrid[i] != MSAsset::Bomb && _showGrid[i] == MSAsset::Flag) {
             _showGrid[i] = MSAsset::Cover;
-            _play[static_cast<size_t>(MSSound::Hammer)] = true;
+            _play[MSSound::Hammer] = true;
             break;
         }
     }
@@ -238,18 +238,19 @@ std::string arc::GameMinesweeper::nbTostring(size_t nb, size_t len)
 void arc::GameMinesweeper::displayInfo(
     std::reference_wrapper<Entities> entities)
 {
-    Entity timeStr(-1, {0.05, 0.15}, {0.1, 0.05}, "Timer:");
+    Entity timeStr(-1, {TEXTPOSX, TIMETEXTPOSY}, TEXTSIZE, "Timer:");
     entities.get().push_back(std::make_unique<arc::Entity>(timeStr));
-    Entity time(-1, {0.075, 0.25}, {0.05, 0.05},
+    Entity time(-1, {TIMETEXTPOSX, TIMETEXTPOSY + TEXTGAP}, TIMETEXTSIZE,
         nbTostring((std::size_t)_totalTime, MAXTIMELEN));
     entities.get().push_back(std::make_unique<arc::Entity>(time));
-    Entity flagStr(-1, {0.05, 0.45}, {0.1, 0.05}, "Flags:");
+    Entity flagStr(-1, {TEXTPOSX, FLAGTEXTPOSY}, TEXTSIZE, "Flags:");
     entities.get().push_back(std::make_unique<arc::Entity>(flagStr));
-    Entity flag(-1, {0.08, 0.55}, {0.04, 0.05}, nbTostring(_flag, MAXFLAGLEN));
+    Entity flag(-1, {FLAGTEXTPOSX, FLAGTEXTPOSY + TEXTGAP}, FLAGTEXTSIZE,
+        nbTostring(_flag, MAXFLAGLEN));
     entities.get().push_back(std::make_unique<arc::Entity>(flag));
-    Entity scoreStr(-1, {0.05, 0.7}, {0.1, 0.05}, "Score:");
+    Entity scoreStr(-1, {TEXTPOSX, SCORETEXTPOSY}, TEXTSIZE, "Score:");
     entities.get().push_back(std::make_unique<arc::Entity>(scoreStr));
-    Entity score(-1, {0.05, 0.8}, {0.1, 0.05},
+    Entity score(-1, {TEXTPOSX, SCORETEXTPOSY + TEXTGAP}, TEXTSIZE,
         nbTostring(_score, MAXSCORELEN));
     entities.get().push_back(std::make_unique<arc::Entity>(score));
 }
@@ -277,26 +278,26 @@ void arc::GameMinesweeper::revealTile(std::size_t idx)
         _lost = true;
         _bombClock = 0;
         _score = 0;
-        _play[static_cast<size_t>(MSSound::Explosion)] = true;
+        _play[MSSound::Explosion] = true;
     }
     else if (tile != MSAsset::None)
-        _play[static_cast<size_t>(MSSound::Digging)] = true;
+        _play[MSSound::Digging] = true;
 }
 
 void arc::GameMinesweeper::placeFlag(std::size_t idx)
 {
     if (_showGrid[idx] == MSAsset::Cover) {
         if (_flag == 0) {
-            _play[static_cast<size_t>(MSSound::Error)] = true;
+            _play[MSSound::Error] = true;
             return;
         }
         _showGrid[idx] = MSAsset::Flag;
-        _play[static_cast<size_t>(MSSound::Hammer)] = true;
+        _play[MSSound::Hammer] = true;
         _score += FLAGSCORE;
         _flag--;
     } else if (_showGrid[idx] == MSAsset::Flag) {
         _showGrid[idx] = MSAsset::Cover;
-        _play[static_cast<size_t>(MSSound::Hammer)] = true;
+        _play[MSSound::Hammer] = true;
         _flag++;
         _score -= FLAGSCORE;
     }
@@ -306,10 +307,6 @@ bool arc::GameMinesweeper::preCheck(Event event)
 {
     bool status = false;
 
-    if (event.first == Action::Tab) {
-        exit(Signal::BackToMenu, {}, false);
-        status = true;
-    }
     if (!status && event.first == Action::Enter) {
         exit(Signal::RestartGame, {}, false);
         status = true;
@@ -325,7 +322,8 @@ bool arc::GameMinesweeper::preCheck(Event event)
     return status;
 }
 
-const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameMinesweeper::_assets = {
+const std::pair<std::vector<std::string>,
+    std::vector<std::string>> arc::GameMinesweeper::_assets = {
     {
         "assets/minesweeper/empty",
         "assets/minesweeper/one",

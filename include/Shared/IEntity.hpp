@@ -19,7 +19,7 @@ namespace arc {
 
     using RGBA = std::tuple<unsigned char, unsigned char,
         unsigned char, unsigned char>;
-        
+
     class IEntity {
         public:
             virtual ~IEntity() = default;

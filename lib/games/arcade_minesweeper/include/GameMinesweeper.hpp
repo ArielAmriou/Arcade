@@ -21,21 +21,33 @@ namespace arc {
     constexpr int DISPLAYX = GRIDY * 16 / 9;
     constexpr int OFFSETX = (DISPLAYX - GRIDX) / 2;
     constexpr std::size_t NB_BOMB = 40;
-    constexpr int MAXTIME = 3 * 60;
+    constexpr int MAXTIME = 5 * 60;
     constexpr std::size_t MAXTIMELEN = 3;
-    constexpr std::size_t MAXSCORELEN = 7;
+    constexpr std::size_t MAXSCORELEN = 6;
     constexpr std::size_t MAXFLAGLEN = 2;
     constexpr std::size_t TILESCORE = 10;
     constexpr std::size_t FLAGSCORE = 100;
     constexpr std::size_t MAXSCORE = TILESCORE * (GRIDTOTAL - NB_BOMB)
                                         + (FLAGSCORE * NB_BOMB);
+    constexpr float EXPLOSIONGAP = 0.4;
+
+    constexpr Vector2f TEXTSIZE = {0.1, 0.05};
+    constexpr Vector2f TIMETEXTSIZE = {0.05, 0.05};
+    constexpr Vector2f FLAGTEXTSIZE = {0.04, 0.05};
+    constexpr float TEXTPOSX = 0.05;
+    constexpr float TIMETEXTPOSX = 0.0775;
+    constexpr float FLAGTEXTPOSX = 0.08;
+    constexpr float TIMETEXTPOSY = 0.15;
+    constexpr float FLAGTEXTPOSY = 0.45;
+    constexpr float SCORETEXTPOSY = 0.7;
+    constexpr float TEXTGAP = 0.1;
 
     class GameMinesweeper : public IGameModule {
         public:
             GameMinesweeper();
             ~GameMinesweeper() {};
 
-            enum class MSAsset {
+            enum MSAsset {
                 Empty,
                 One,
                 Two,
@@ -51,7 +63,7 @@ namespace arc {
                 None
             };
 
-            enum class MSSound {
+            enum MSSound {
                 Background,
                 Digging,
                 Hammer,
