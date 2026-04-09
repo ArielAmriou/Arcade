@@ -200,9 +200,11 @@ namespace arc {
             }
             std::getline(validPath, asset);
             if (!validPath) {
+                validPath.close();
                 std::cerr << "Error : " << path << " could not read this file" << std::endl;
                 return ERROR;
             }
+            validPath.close();
             _assets.push_back(asset);
         }
         return SUCCES;
