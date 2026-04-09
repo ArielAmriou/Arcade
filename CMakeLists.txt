@@ -24,6 +24,8 @@ set(HEADERS
 add_executable(arcade ${MAIN} ${SRCS})
 target_include_directories(arcade PRIVATE ${HEADERS})
 
+target_compile_options(arcade PRIVATE -g)
+
 add_custom_target(core
     DEPENDS arcade
 )
@@ -59,7 +61,7 @@ add_custom_target(games ALL
 )
 
 file(GLOB_RECURSE LIBS
-    "${CMAKE_SOURCE_DIR}/lib/*.so"
+    "${CMAKE_SOURCE_DIR}/lib/arcade_*.so"
 )
 
 add_custom_target(clean_libs

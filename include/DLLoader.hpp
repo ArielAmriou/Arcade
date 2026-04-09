@@ -41,13 +41,13 @@ namespace arc {
                 if (err)
                     throw arc::exceptions::LibraryLoadError(err);
                 if (symbol == nullptr)
-                    throw arc::exceptions::LibraryLoadError(dlerror());
+                    throw arc::exceptions::LibraryLoadError();
                 auto makeInstance = reinterpret_cast<std::unique_ptr<T> (*)(void)>(symbol);
                 if (makeInstance == nullptr)
                     throw arc::exceptions::LibraryLoadError();
                 auto tmp = makeInstance();
                 if (tmp == nullptr)
-                    throw arc::exceptions::LibraryLoadError(dlerror());
+                    throw arc::exceptions::LibraryLoadError();
                 return tmp;
             }
 

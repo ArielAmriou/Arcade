@@ -26,11 +26,11 @@ arc::LibType arc::DLLoader::getLibType()
     if (_handle == nullptr)
         throw arc::exceptions::LibraryLoadError();
     void *symbol = dlsym(_handle, "getLibType");
-    if (symbol == nullptr)
-        throw arc::exceptions::LibraryLoadError();
     auto err = dlerror();
     if (err)
         throw arc::exceptions::LibraryLoadError(err);
+    if (symbol == nullptr)
+        throw arc::exceptions::LibraryLoadError();
     auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
     if (getLibType() == arc::LibType::None)
         throw arc::exceptions::LibraryLoadError();

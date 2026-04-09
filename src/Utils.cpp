@@ -25,9 +25,9 @@ std::vector<std::string> arc::Utils::getLibsPath() noexcept
 arc::SplitLibs arc::Utils::splitLibs(std::vector<std::string> libs) noexcept
 {
     SplitLibs split;
-    LibType type = arc::LibType::None;
 
-    for (auto lib: libs) {
+    for (auto &lib: libs) {
+        LibType type = arc::LibType::None;
         try {
             DLLoader loader(lib);
             type = loader.getLibType();
@@ -45,13 +45,13 @@ arc::SplitLibs arc::Utils::getSplitLibs() noexcept
     return splitLibs(getLibsPath());
 }
 
-std::size_t arc::Utils::findLib(std::vector<std::string> list, std::string lib)
+int arc::Utils::findLib(std::vector<std::string> list, std::string lib) noexcept
 {
     std::size_t i = 0;
-    for (auto iter: list) {
+    for (auto &iter: list) {
         if (iter == lib)
             return i;
         ++i;
     }
-    throw arc::exceptions::NoSuchLib(lib);
+    return -1;
 }

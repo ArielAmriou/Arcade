@@ -12,6 +12,7 @@
 arc::DisplaySFML::DisplaySFML(): _renderWindow(sf::VideoMode({WINX, WINY}), "SFML graphical library")
 {
     _font.loadFromFile(FONT_PATH.data());
+    _renderWindow.setFramerateLimit(60);
 }
 
 arc::DisplaySFML::~DisplaySFML()
@@ -153,7 +154,6 @@ void arc::DisplaySFML::drawGame(const std::pair<Entities, Sounds> elements) noex
             _sounds[idx]->play();
         }
     }
-    usleep(1000000 / 60);
     _renderWindow.display();
 }
 

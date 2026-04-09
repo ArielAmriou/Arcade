@@ -21,18 +21,9 @@ int main(const int ac, const char **av)
         try {
             arc::Core core(av[1]);
             core.play();
-        } catch (const arc::exceptions::NotGraphical &e) {
-            std::cerr << "Error: '" << av[1] << "' not a graphical library" << std::endl;
+        } catch (const arc::exceptions::CoreException &e) {
+            std::cerr << "Error: " << e.what() << std::endl;
             std::cerr << "Exit code: 84" << std::endl;
-            status = EPIERROR;
-        } catch (const arc::exceptions::LibraryLoadError &e) {
-            std::cerr << e.what() << std::endl;
-            status = EPIERROR;
-        } catch (const arc::exceptions::NoSuchLib &e) {
-            std::cerr << e.what() << std::endl;
-            status = EPIERROR;
-        } catch (const arc::exceptions::AssetLoadError &e) {
-            std::cerr << e.what() << std::endl;
             status = EPIERROR;
         }
     }
