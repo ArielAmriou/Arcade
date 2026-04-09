@@ -12,9 +12,6 @@
 #include "Entity.hpp"
 #include "Sound.hpp"
 
-#include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
-
 arc::GameMenu::GameMenu()
 {
     _splitLibs = arc::utils::getSplitLibs();
@@ -33,14 +30,6 @@ void arc::GameMenu::simulate(const Event event) noexcept
         gameArgs.push_back(_splitLibs.second[_idxs.second]);
         _commands.push_back(std::make_pair(Signal::LoadGame, gameArgs));
         return;
-    }
-    if (event.first == Action::Space) {
-        std::vector<std::string> userArgs;
-        userArgs.push_back(_name);
-        _commands.push_back(std::make_pair(Signal::LoadUser, userArgs));
-        std::vector<std::string> scoreArgs;
-        scoreArgs.push_back("100");
-        _commands.push_back(std::make_pair(Signal::LoadScore, scoreArgs));
     }
     if (event.first == Action::Right) {
         if (_selectLibType == _libType.size() - 1)
@@ -75,20 +64,7 @@ std::pair<arc::Entities, arc::Sounds> arc::GameMenu::getElements() noexcept
         else
             selectLibsColor.push_back(WHITE);
     }
-    Entity title(-1, {0.4, 0.05}, {0.2, 0.1}, "Arcade", WHITE);
-    entities.push_back(std::make_unique<arc::Entity>(title));
-    Entity display(-1, {0.05, 0.2}, {0.25, 0.075}, formatLen("Display", 15), selectLibsColor[0]);
-    entities.push_back(std::make_unique<arc::Entity>(display));
-    showNLibs(_splitLibs.first, 0.05, 4, _idxs.first, entities);
-    Entity game(-1, {0.375, 0.2}, {0.25, 0.075}, formatLen("Game", 15), selectLibsColor[1]);
-    entities.push_back(std::make_unique<arc::Entity>(game));
-    showNLibs(_splitLibs.second, 0.375, 4, _idxs.second, entities);
-    Entity name(-1, {0.7, 0.2}, {0.25, 0.075}, formatLen("Name", 15), selectLibsColor[2]);
-    entities.push_back(std::make_unique<arc::Entity>(name));
-    Entity user_name(-1, {0.7, 0.3}, {0.25, 0.075}, formatLen(_name, 15));
-    entities.push_back(std::make_unique<arc::Entity>(user_name));
-    Entity score(-1, {0.375, 0.625}, {0.25, 0.075}, formatLen("Score", 15));
-    entities.push_back(std::make_unique<arc::Entity>(score));
+    printString(entities, selectLibsColor);
     showScore(entities);
     if (_loadBackground) {
         Sound background(0, true);
@@ -128,7 +104,8 @@ std::string arc::GameMenu::formatLen(std::string str, std::size_t len)
     return format;
 }
 
-void arc::GameMenu::changeSelectLib(Action action, std::size_t size, std::reference_wrapper<std::size_t> idx)
+void arc::GameMenu::changeSelectLib(
+    Action action, std::size_t size, std::reference_wrapper<std::size_t> idx)
 {
     if (action == Action::Down) {
         if (size - 1 == idx.get())
@@ -144,8 +121,8 @@ void arc::GameMenu::changeSelectLib(Action action, std::size_t size, std::refere
     }
 }
 
-void arc::GameMenu::showNLibs(std::vector<std::string> list, float posx, size_t n,
-    size_t idx, std::reference_wrapper<Entities> entities)
+void arc::GameMenu::showNLibs(std::vector<std::string> list, float posx,
+    size_t n, size_t idx, std::reference_wrapper<Entities> entities)
 {
     auto start = idx;
     if (list.size() < n) {
@@ -158,7 +135,8 @@ void arc::GameMenu::showNLibs(std::vector<std::string> list, float posx, size_t 
     for (size_t i = start; i < n + start; i++) {
         auto str = formatLen(formatPath(list[i]), LIBMAXSIZE);
         RGBA color = idx == i ? BLUE : WHITE; 
-        Entity entity(-1, {posx, 0.3 + (0.075 * (i - start))}, {0.25, 0.05}, str, color);
+        Entity entity(-1, {posx, LIBPOSY + (LIBGAPY * (i - start))},
+            LIBTEXTSIZE, str, color);
         entities.get().push_back(std::make_unique<arc::Entity>(entity));
     }
 }
@@ -190,20 +168,48 @@ void arc::GameMenu::changeName(Action action)
 void arc::GameMenu::showScore(std::reference_wrapper<Entities> entities)
 {
     auto iter = _userScore.begin();
-    for (size_t i = 0; i < 9; i++) {
+    for (size_t i = 0; i < NBSCORE; i++) {
         std::string rang = std::to_string(i + 1);
         std::string score = "N/A";
         if (iter != _userScore.end()) {
             score = std::to_string(*iter);
             iter++;
         }
-        Entity scores(-1, {0.05 + (i / 3 * 0.325), 0.725 + (i % 3 * 0.1)},
-            {0.25, 0.04}, formatLen("##" + rang + ": " + score, LIBMAXSIZE));
+        Entity scores(-1, {SCOREPOSX + (i / SCOREBYCOLUMN * SCOREGAPX),
+            SCOREPOSY + (i % SCOREBYCOLUMN * SCOREGAPY)},
+            SCORETEXTSIZE, formatLen("##" + rang + ": " + score, LIBMAXSIZE));
         entities.get().push_back(std::make_unique<arc::Entity>(scores));
     }
 }
 
-const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameMenu::_assets = {
+void arc::GameMenu::printString(std::reference_wrapper<Entities> entities,
+    std::vector<RGBA> selectLibsColor)
+{
+    Entity title(-1, TITLETEXTPOS, TITLETEXTSIZE, "Arcade", WHITE);
+    entities.get().push_back(std::make_unique<arc::Entity>(title));
+    Entity display(-1, {DISPLAYPOSX, SUBTITLEPOSY}, TEXTSIZE,
+        formatLen("Display", TEXTWIDTH), selectLibsColor[Column::Display]);
+    entities.get().push_back(std::make_unique<arc::Entity>(display));
+    showNLibs(_splitLibs.first, DISPLAYPOSX, NBSHOWLIBS,
+        _idxs.first, entities);
+    Entity game(-1, {TEXTPOSXMID, SUBTITLEPOSY}, TEXTSIZE,
+        formatLen("Game", TEXTWIDTH), selectLibsColor[Column::Game]);
+    entities.get().push_back(std::make_unique<arc::Entity>(game));
+    showNLibs(_splitLibs.second, TEXTPOSXMID, NBSHOWLIBS,
+        _idxs.second, entities);
+    Entity name(-1, {NAMEPOSX, SUBTITLEPOSY}, TEXTSIZE,
+        formatLen("Name", TEXTWIDTH), selectLibsColor[Column::Name]);
+    entities.get().push_back(std::make_unique<arc::Entity>(name));
+    Entity user_name(-1, {NAMEPOSX, NAMEPOSY}, TEXTSIZE,
+        formatLen(_name, TEXTWIDTH));
+    entities.get().push_back(std::make_unique<arc::Entity>(user_name));
+    Entity score(-1, {TEXTPOSXMID, SCORETEXTPOSY}, TEXTSIZE,
+        formatLen("Score", TEXTWIDTH));
+    entities.get().push_back(std::make_unique<arc::Entity>(score));
+}
+
+const std::pair<std::vector<std::string>, std::vector<std::string>>
+    arc::GameMenu::_assets = {
     {
 
     }, {

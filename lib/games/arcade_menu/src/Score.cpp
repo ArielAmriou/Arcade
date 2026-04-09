@@ -10,8 +10,6 @@
 #include <fstream>
 #include "Score.hpp"
 
-#include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 
 arc::Score::Score()
 {
@@ -40,7 +38,8 @@ void arc::Score::parseLine(std::string line)
     }
 }
 
-std::set<size_t, std::greater<std::size_t>> arc::Score::getScores(std::string name, std::string game)
+std::set<size_t, std::greater<std::size_t>>
+    arc::Score::getScores(std::string name, std::string game)
 {
     std::set<size_t, std::greater<std::size_t>> list;
 
