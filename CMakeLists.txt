@@ -24,8 +24,6 @@ set(HEADERS
 add_executable(arcade ${MAIN} ${SRCS})
 target_include_directories(arcade PRIVATE ${HEADERS})
 
-target_compile_options(arcade PRIVATE -g)
-
 add_custom_target(core
     DEPENDS arcade
 )
