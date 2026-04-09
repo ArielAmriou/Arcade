@@ -6,8 +6,6 @@
 */
 
 #include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
-
 #include "DisplaySDL2.hpp"
 
 arc::DisplaySDL2::DisplaySDL2()
@@ -19,8 +17,8 @@ arc::DisplaySDL2::DisplaySDL2()
     _window = SDL_CreateWindow("SDL2 graphical library", SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED, WINX, WINY, 0);
     _renderer = SDL_CreateRenderer(_window, -1, 0);
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
-    _font = TTF_OpenFont("assets/SDL2/font.ttf", 25);
+    Mix_OpenAudio(FREQUENCY, MIX_DEFAULT_FORMAT, CHANELS, CHUNKSIZE);
+    _font = TTF_OpenFont(std::string(FONT).c_str(), FONTSIZE);
 }
 
 arc::DisplaySDL2::~DisplaySDL2()
@@ -65,12 +63,14 @@ int arc::DisplaySDL2::setAssets(const Assets assets) noexcept
         path += ".png";
         SDL_Surface *image = IMG_Load(path.c_str());
         if (!image) {
-            std::cerr << "IMG_Load failed for '" << path << "': " << IMG_GetError() << std::endl;
+            std::cerr << "IMG_Load failed for '" << path
+                << "': " << IMG_GetError() << std::endl;
             return -1;
         }
         SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, image);
         if (!texture) {
-            std::cerr << "CreateTexture failed: " << SDL_GetError() << std::endl;
+            std::cerr << "CreateTexture failed: "
+                << SDL_GetError() << std::endl;
             return -1;
         }
         _images.push_back({image, texture});
@@ -78,7 +78,8 @@ int arc::DisplaySDL2::setAssets(const Assets assets) noexcept
     for (auto path: assets.second) {
         Mix_Chunk *music = Mix_LoadWAV(std::string(path).c_str());
         if (!music)  {
-            std::cerr << "Mix_LoadMUS failed for '" << path << "': " << Mix_GetError() << std::endl;
+            std::cerr << "Mix_LoadMUS failed for '" << path
+                << "': " << Mix_GetError() << std::endl;
             return -1;
         }
         _musics.push_back(music);
@@ -149,7 +150,7 @@ void arc::DisplaySDL2::drawGame(const std::pair<Entities, Sounds> elements) noex
         }
     }
     SDL_RenderPresent(_renderer);
-    SDL_Delay(1000 / 60);
+    SDL_Delay(FPS);
 }
 
 void arc::DisplaySDL2::freeAsset()
