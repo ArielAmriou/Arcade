@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <string>
+#include <iostream>
 #include "DLLoader.hpp"
 #include "GameMenu.hpp"
 #include "Entity.hpp"
@@ -14,7 +15,7 @@
 
 arc::GameMenu::GameMenu()
 {
-    _splitLibs = arc::utils::getSplitLibs();
+    _splitLibs = arc::Utils::getSplitLibs();
 }
 
 void arc::GameMenu::simulate(const Event event) noexcept

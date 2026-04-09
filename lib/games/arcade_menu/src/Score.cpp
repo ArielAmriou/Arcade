@@ -8,8 +8,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include "Score.hpp"
-
 
 arc::Score::Score()
 {

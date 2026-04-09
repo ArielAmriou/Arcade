@@ -19,12 +19,12 @@ namespace arc {
     using SplitLibs = std::pair<std::vector<std::string>,
         std::vector<std::string>>;
 
-    class utils {
+    class Utils {
         public:
             static SplitLibs getSplitLibs() noexcept;
             static int findLib(std::vector<std::string>, std::string) noexcept;
-        private:
             static std::vector<std::string> getLibsPath() noexcept;
+        private:
             static SplitLibs splitLibs(std::vector<std::string> libs) noexcept;
     };
 }

@@ -22,7 +22,6 @@ namespace arc {
             virtual ~IDisplayModule() = default;
 
             [[nodiscard]] virtual Event getEvent() noexcept = 0;
-
             // return -1 in case of error and 0 if no errors occurs
             [[nodiscard]] virtual int setAssets(const Assets) noexcept = 0;
             virtual void drawGame(const std::pair<Entities, Sounds>) noexcept = 0;

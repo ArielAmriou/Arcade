@@ -22,22 +22,21 @@
 namespace arc {
     class DLLoader {
         public:
-            DLLoader() noexcept = default;
             DLLoader(const std::string &path) noexcept;
             ~DLLoader();
 
-            void reset(const std::string &path) noexcept;
+            DLLoader(DLLoader&& obj);
 
             template<typename T>
             [[nodiscard]] std::optional<std::unique_ptr<T>> makeInstance(arc::LibType expected) {
-                if (_handle == nullptr)
+                try {
+                    if (getLibType() != expected)
+                        return {};
+                } catch (...) {
                     return {};
-                void *symbol = dlsym(_handle, "getLibType");
-                auto getLibType = reinterpret_cast<arc::LibType (*)(void)>(symbol);
-                if (getLibType == nullptr || getLibType() != expected)
-                    return {};
+                }
 
-                symbol = dlsym(_handle, "makeInstance");
+                void *symbol = dlsym(_handle, "makeInstance");
                 if (symbol == nullptr)
                     throw arc::exceptions::LibraryLoadError(dlerror());
                 auto makeInstance = reinterpret_cast<std::unique_ptr<T> (*)(void)>(symbol);
@@ -50,8 +49,10 @@ namespace arc {
             }
 
             [[nodiscard]] arc::LibType getLibType();
+            std::string getLibPath();
         private:
             void *_handle = nullptr;
+            std::string _path;
     };
 
 }

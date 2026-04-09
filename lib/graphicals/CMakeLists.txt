@@ -21,6 +21,8 @@ target_include_directories(${SDL2} PRIVATE ${SHARED} ${SDL2}/include/)
 target_link_libraries(${SDL2} SDL2 SDL2_image SDL2_mixer SDL2_ttf)
 set_target_properties(${SDL2} PROPERTIES PREFIX "")
 
+target_compile_options(${SDL2} PRIVATE -g)
+
 set(NCURSES
         arcade_ncurses
 )
@@ -40,6 +42,8 @@ target_include_directories(${NCURSES} PRIVATE ${SHARED} ${NCURSES}/include/)
 target_link_libraries(${NCURSES} ncurses)
 set_target_properties(${NCURSES} PROPERTIES PREFIX "")
 
+target_compile_options(${NCURSES} PRIVATE -g)
+
 set(SFML
     arcade_sfml
 )
@@ -52,6 +56,8 @@ add_library(${SFML} SHARED ${SRCS_SFML})
 target_include_directories(${SFML} PRIVATE ${SHARED} ${SFML}/include/)
 target_link_libraries(${SFML} sfml-graphics sfml-window sfml-system sfml-audio)
 set_target_properties(${SFML} PROPERTIES PREFIX "")
+
+target_compile_options(${SFML} PRIVATE -g)
 
 add_custom_target(move ALL
     DEPENDS ${SDL2} ${NCURSES} ${SFML}

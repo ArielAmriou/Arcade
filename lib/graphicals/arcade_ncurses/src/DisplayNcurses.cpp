@@ -13,7 +13,7 @@
 #include "DisplayNcurses.hpp"
 
 namespace arc {
-    const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMapNcurses = {
+    const std::unordered_map<mmask_t, Action> DisplayNcurses::_mouseButtonMapNcurses = {
         {BUTTON1_RELEASED, Action::LeftMouse},
         {BUTTON2_RELEASED, Action::MiddleMouse},
         {BUTTON3_RELEASED, Action::RightMouse},
@@ -22,7 +22,7 @@ namespace arc {
         {BUTTON3_PRESSED, Action::RightMouse},
     };
 
-    const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
+    const std::unordered_map<int, Action> DisplayNcurses::_keyMap = {
     {ERR, Action::None},
     {'a', Action::A},
     {'b', Action::B},
@@ -167,10 +167,8 @@ namespace arc {
             wattron(_window, COLOR_PAIR(color));
             if (entity->getIdx() >= 0 && entity->getIdx() < _assets.size()) {
                 mvwprintw(_window,
-                    static_cast<int>(pos.second * (getmaxy(_window)
-                        - PRINT_OFFSET)),
-                    static_cast<int>(pos.first * (getmaxx(_window)
-                        - PRINT_OFFSET)), "%s",
+                    static_cast<int>(pos.second * getmaxy(_window)),
+                    static_cast<int>(pos.first * getmaxx(_window)), "%s",
                     _assets[entity->getIdx()].data());
             }
             if (entity->getStr())
@@ -200,9 +198,11 @@ namespace arc {
             }
             std::getline(validPath, asset);
             if (!validPath) {
+                validPath.close();
                 std::cerr << "Error : " << path << " could not read this file" << std::endl;
                 return ERROR;
             }
+            validPath.close();
             _assets.push_back(asset);
         }
         return SUCCES;

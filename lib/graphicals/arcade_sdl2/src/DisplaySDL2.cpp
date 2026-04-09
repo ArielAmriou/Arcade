@@ -73,7 +73,7 @@ int arc::DisplaySDL2::setAssets(const Assets assets) noexcept
                 << SDL_GetError() << std::endl;
             return -1;
         }
-        _images.push_back({image, texture});
+        _images.emplace_back(image, texture);
     }
     for (auto path: assets.second) {
         Mix_Chunk *music = Mix_LoadWAV(std::string(path).c_str());
@@ -82,7 +82,7 @@ int arc::DisplaySDL2::setAssets(const Assets assets) noexcept
                 << "': " << Mix_GetError() << std::endl;
             return -1;
         }
-        _musics.push_back(music);
+        _musics.emplace_back(music);
     }
     return 0;
 }
