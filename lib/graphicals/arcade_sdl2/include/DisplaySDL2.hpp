@@ -15,6 +15,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <unordered_map>
 #include <utility> 
+#include <string_view>
 #include "IDisplayModule.hpp"
 
 namespace arc {
@@ -22,6 +23,12 @@ namespace arc {
     constexpr int WINX = 960;
     constexpr int WINY = 540;
     constexpr SDL_Color WHITE = {0, 0, 0, 255};
+    constexpr int FREQUENCY = 44100;
+    constexpr int CHANELS = 2;
+    constexpr int CHUNKSIZE = 2048;
+    constexpr std::string_view FONT = "assets/SDL2/font.ttf";
+    constexpr int FONTSIZE = 25;
+    constexpr float FPS = 1000 / 60;
 
     using SDL_Entity =
         std::reference_wrapper<const std::unique_ptr<arc::IEntity>>;

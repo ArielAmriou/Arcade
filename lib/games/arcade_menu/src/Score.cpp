@@ -38,7 +38,8 @@ void arc::Score::parseLine(std::string line)
     }
 }
 
-std::set<size_t, std::greater<std::size_t>> arc::Score::getScores(std::string name, std::string game)
+std::set<size_t, std::greater<std::size_t>>
+    arc::Score::getScores(std::string name, std::string game)
 {
     std::set<size_t, std::greater<std::size_t>> list;
 
