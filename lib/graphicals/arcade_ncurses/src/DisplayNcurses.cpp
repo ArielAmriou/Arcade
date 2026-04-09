@@ -13,7 +13,7 @@
 #include "DisplayNcurses.hpp"
 
 namespace arc {
-    const std::unordered_map<mmask_t, arc::Action> arc::DisplayNcurses::_mouseButtonMapNcurses = {
+    const std::unordered_map<mmask_t, Action> DisplayNcurses::_mouseButtonMapNcurses = {
         {BUTTON1_RELEASED, Action::LeftMouse},
         {BUTTON2_RELEASED, Action::MiddleMouse},
         {BUTTON3_RELEASED, Action::RightMouse},
@@ -22,7 +22,7 @@ namespace arc {
         {BUTTON3_PRESSED, Action::RightMouse},
     };
 
-    const std::unordered_map<int, arc::Action> DisplayNcurses::_keyMap = {
+    const std::unordered_map<int, Action> DisplayNcurses::_keyMap = {
     {ERR, Action::None},
     {'a', Action::A},
     {'b', Action::B},
