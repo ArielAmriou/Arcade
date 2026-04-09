@@ -6,13 +6,14 @@
 */
 
 #include <cstdlib> 
-#include <ctime> 
+#include <ctime>
+#include <chrono> 
 #include "GameSnake.hpp"
 #include "Entity.hpp"
 #include "Sound.hpp"
 #include "IGameModule.hpp"
 
-arc::GameSnake::GameSnake() : _rotation(getAngle(Turn::Right)), _tick(0)
+arc::GameSnake::GameSnake() : _rotation(getAngle(Direction::Right))
 {
     srand((unsigned)time(0));
     int head = rand() % SIZE;
@@ -34,11 +35,11 @@ void arc::GameSnake::simulate(const Event event) noexcept
     size_t head = _snake[0];
     
     if (prevCheck(event)
-        || moveHead(getAngle(Turn::Top), (head >= GRIDX), -GRIDX, head)
-        || moveHead(getAngle(Turn::Right),
+        || moveHead(getAngle(Direction::Top), (head >= GRIDX), -GRIDX, head)
+        || moveHead(getAngle(Direction::Right),
             (head % GRIDX != GRIDX - 1), 1, head)
-        || moveHead(getAngle(Turn::Bottom), (head < SIZE - GRIDX), GRIDX, head)
-        || moveHead(getAngle(Turn::Left), (head % GRIDX != 0), -1, head))
+        || moveHead(getAngle(Direction::Bottom), (head < SIZE - GRIDX), GRIDX, head)
+        || moveHead(getAngle(Direction::Left), (head % GRIDX != 0), -1, head))
         return;
     moveSnake(head);
 }
@@ -50,16 +51,16 @@ std::pair<arc::Entities, arc::Sounds> arc::GameSnake::getElements() noexcept
 
     for (size_t i = 0; i < _snake.size(); i++)
         drawSnakePart(entities, i);
-    Entity tmp(static_cast<size_t>(SnakeAsset::Apple), getPartPos(_apple),
+    Entity tmp(SnakeAsset::Apple, getPartPos(_apple),
         {1.0 / GRIDX, 1.0 / GRIDY}, 0);
     entities.push_back(std::make_unique<arc::Entity>(tmp));
     if (_loadBackground) {
-        Sound background(static_cast<size_t>(SnakeSound::Background), true);
+        Sound background(SnakeSound::Background, true);
         sounds.push_back(std::make_unique<arc::Sound>(background));
         _loadBackground = false;
     }
     if (_eat) {
-        Sound pickUp(static_cast<size_t>(SnakeSound::PickUp), false);
+        Sound pickUp(SnakeSound::PickUp, false);
         sounds.push_back(std::make_unique<arc::Sound>(pickUp));
         _eat = false;
     }
@@ -89,7 +90,7 @@ void arc::GameSnake::drawSnakePart(
 {
     if (idx == 0) {
         auto snake = _snake[idx];
-        Entity part(static_cast<size_t>(SnakeAsset::Head), getPartPos(snake),
+        Entity part(SnakeAsset::Head, getPartPos(snake),
             {1.0 / GRIDX, 1.0 / GRIDY}, _rotation);
         entities.get().push_back(std::make_unique<arc::Entity>(part));
     } else if (idx == _snake.size() - 1)
@@ -109,10 +110,10 @@ void arc::GameSnake::drawBody(
     if (abs(before - after) != 2 && abs(before - after) != GRIDX * 2)
         return drawTurnBody(entities, idx);
     if (before == snake - 1)
-        rotation = getAngle(Turn::Left);
+        rotation = getAngle(Direction::Left);
     if (before == snake + 1)
-        rotation = getAngle(Turn::Right);
-    Entity part(static_cast<size_t>(SnakeAsset::Body), getPartPos(snake),
+        rotation = getAngle(Direction::Right);
+    Entity part(SnakeAsset::Body, getPartPos(snake),
             {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
     entities.get().push_back(std::make_unique<arc::Entity>(part));
 }
@@ -128,16 +129,16 @@ void arc::GameSnake::drawTurnBody(
     if ((before % GRIDX == snake % GRIDX && before > snake
         && after + 1 == snake) || (after % GRIDX == snake % GRIDX
         && after > snake && before + 1 == snake))
-        rotation = getAngle(Turn::Right);
+        rotation = getAngle(Direction::Right);
     if ((before % GRIDX == snake % GRIDX && before < snake
         && after + 1 == snake) || (after % GRIDX == snake % GRIDX
         && after < snake && before + 1 == snake))
-        rotation = getAngle(Turn::Bottom);
+        rotation = getAngle(Direction::Bottom);
     if ((before % GRIDX == snake % GRIDX && before < snake
         && after - 1 == snake) || (after % GRIDX == snake % GRIDX
         && after < snake && before - 1 == snake))
-        rotation = getAngle(Turn::Left);
-    Entity part(static_cast<size_t>(SnakeAsset::Turn), getPartPos(snake),
+        rotation = getAngle(Direction::Left);
+    Entity part(SnakeAsset::Turn, getPartPos(snake),
             {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
     entities.get().push_back(std::make_unique<arc::Entity>(part));
 }
@@ -150,12 +151,12 @@ void arc::GameSnake::drawTail(
     float rotation = 0;
 
     if (before == snake - 1)
-        rotation = getAngle(Turn::Left);
+        rotation = getAngle(Direction::Left);
     if (before > snake)
-        rotation = getAngle(Turn::Bottom);
+        rotation = getAngle(Direction::Bottom);
     if (before == snake + 1)
-        rotation = getAngle(Turn::Right);
-    Entity part(static_cast<size_t>(SnakeAsset::Tail), getPartPos(snake),
+        rotation = getAngle(Direction::Right);
+    Entity part(SnakeAsset::Tail, getPartPos(snake),
             {1.0 / GRIDX, 1.0 / GRIDY}, rotation);
     entities.get().push_back(std::make_unique<arc::Entity>(part));
 }
@@ -213,37 +214,38 @@ bool arc::GameSnake::moveHead(float angle, bool condition, int newPos,
 
 void arc::GameSnake::changeDir()
 {
+    auto prev = _rotation;
+
     for (auto myevent: _events) {
         auto action = myevent.first;
         if ((action == Action::Z || action == Action::Up)
-            && _rotation != getAngle(Turn::Bottom))
-            _rotation = getAngle(Turn::Top);
+            && _rotation != getAngle(Direction::Bottom))
+            _rotation = getAngle(Direction::Top);
         if ((action == Action::S || action == Action::Down)
-            && _rotation != getAngle(Turn::Top))
-            _rotation = getAngle(Turn::Bottom);
+            && _rotation != getAngle(Direction::Top))
+            _rotation = getAngle(Direction::Bottom);
         if ((action == Action::Q || action == Action::Left)
-            && _rotation != getAngle(Turn::Right))
-            _rotation = getAngle(Turn::Left);
+            && _rotation != getAngle(Direction::Right))
+            _rotation = getAngle(Direction::Left);
         if ((action == Action::D || action == Action::Right)
-            && _rotation != getAngle(Turn::Left))
-            _rotation = getAngle(Turn::Right);
+            && _rotation != getAngle(Direction::Left))
+            _rotation = getAngle(Direction::Right);
     }
+    if (prev != _rotation && (int)(prev / getAngle(Direction::Right)) % 2
+        == (int)(_rotation / getAngle(Direction::Right)) % 2)
+        _rotation = prev;
     _events.clear();
 }
 
 bool arc::GameSnake::prevCheck(Event event)
 {
     bool quit = false;
-    if (event.first == Action::Tab) {
-        std::vector<std::string> args;
-        exit(Signal::BackToMenu, args);
-        quit = true;
-    }
+
     if (!quit) {
         _events.push_back(event);
-        _tick++;
-        if (_tick == MOVETICK) {
-            _tick = 0;
+        updateClock();
+        if (_totalTime >= MOVETIME) {
+            _totalTime = 0;
             changeDir();
         } else
             quit = true;
@@ -269,6 +271,15 @@ void arc::GameSnake::moveSnake(size_t head)
             break;
         }
     }
+}
+
+void arc::GameSnake::updateClock()
+{
+    auto now = std::chrono::steady_clock::now();
+    auto diff = std::chrono::duration<double>(now - _lastTime).count();
+
+    _totalTime += diff;
+    _lastTime = now;
 }
 
 const std::pair<std::vector<std::string>, std::vector<std::string>> arc::GameSnake::_assets = {

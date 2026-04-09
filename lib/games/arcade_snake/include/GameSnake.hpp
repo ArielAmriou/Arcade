@@ -9,6 +9,7 @@
     #define GAME_HPP
 
 #include <array>
+#include <chrono>
 #include "Arcade.hpp"
 #include "IGameModule.hpp"
 
@@ -19,7 +20,7 @@ namespace arc {
     constexpr int SIZE = GRIDX * GRIDY;
     constexpr std::array<float, 4> ANGLE = {0, 90, 180, 270};
     constexpr std::size_t GAIN = 10;
-    constexpr std::size_t MOVETICK = 10;
+    constexpr double MOVETIME = 0.15;
     constexpr std::size_t STARTBODYSIZE = 3;
 
     class GameSnake : public IGameModule {
@@ -27,7 +28,7 @@ namespace arc {
             GameSnake();
             ~GameSnake() {};
 
-            enum class SnakeAsset {
+            enum SnakeAsset {
                 Head,
                 Tail,
                 Body,
@@ -36,14 +37,14 @@ namespace arc {
                 None,
             };
 
-            enum class Turn {
+            enum Direction {
                 Top,
                 Right,
                 Bottom,
                 Left,
             };
 
-            enum class SnakeSound {
+            enum SnakeSound {
                 Background,
                 PickUp,
             };
@@ -60,7 +61,6 @@ namespace arc {
             static const Assets _assets;
             int _apple;
             int _rotation;
-            std::size_t _tick;
             std::vector<Event> _events;
             std::vector<std::size_t> _snake;
             float _eat = false;
@@ -68,6 +68,8 @@ namespace arc {
             std::vector<Command> _commands;
             bool _loadBackground = false;
             size_t _score = 0;
+            std::chrono::_V2::steady_clock::time_point _lastTime;
+            double _totalTime = 0;
 
             void drawSnakePart(
                 std::reference_wrapper<Entities> entities, size_t idx);
@@ -78,7 +80,7 @@ namespace arc {
             void drawTail(
                 std::reference_wrapper<Entities> entities, size_t idx);
             Vector2f getPartPos(size_t part);
-            float getAngle(Turn turn) {return ANGLE[static_cast<size_t>(turn)];}
+            float getAngle(Direction turn) {return ANGLE[turn];}
             void spawnApple();
             bool checkSnakeCollision(size_t idx);
             bool moveHead(float angle, bool condition, int newPos,
@@ -86,6 +88,7 @@ namespace arc {
             void changeDir();
             bool prevCheck(Event);
             void moveSnake(size_t);
+            void updateClock();
     };
 }
 
