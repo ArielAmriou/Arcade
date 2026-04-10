@@ -1,5 +1,7 @@
 # Arcade
 
+![Image](https://github.com/user-attachments/assets/085b4833-20e2-413f-a931-614ca544d23c)
+
 ## Overview
 
 Arcade is an Epitech project whose goal is emulate an arcade using display and game dynamic libaries
@@ -7,8 +9,6 @@ Arcade is an Epitech project whose goal is emulate an arcade using display and g
 Contributors: Pierrick Simon, Antoine Leroy, and Ariel Amriou.
 
 This project is compatible with other dynamic libraries who share the same architechture (Sandes Savarimuthu, Philibert Gentien, Andriamirado Ravelonahina, Maxime Kournikov, Alen Sarsen and Alex Huang).
-
-videos
 
 ## Features
 
