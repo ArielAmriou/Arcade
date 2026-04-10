@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "DisplaySFML.hpp"
 
-arc::DisplaySFML::DisplaySFML(): _renderWindow(sf::VideoMode({WINX, WINY}), "SFML graphical library")
+arc::DisplaySFML::DisplaySFML(): _renderWindow(sf::VideoMode({WINX, WINY}), "SFML graphical library", sf::Style::Close)
 {
     _font.loadFromFile(FONT_PATH.data());
     _renderWindow.setFramerateLimit(60);
