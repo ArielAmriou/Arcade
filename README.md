@@ -114,10 +114,12 @@ Run the tests with:
 - ✅ **`Architechture`**: Implement architechture to accomodate runtime library changes.
 - ✅ **`Arcade`**: Handle library loading, changes, and builtins.
 - ✅ **`Games`**: Create the 2 required games.
+- ✅ **`Menu`**: Create menu game.
 - ✅ **`Graphical libraries`**: Create the 3 required graphical libraries.
+- ✅ **`Documentation`**: Write developer documentation.
 
 ## Contributing
 
-If you want to contribute to this project, you can read the documentation in ./doc/ to better understand the architecture and how to implement the required fonctionnalities for a library to work.
+If you want to contribute to this project, you can read the documentation in ./doc/ to better understand the architecture and how to implement the required fonctionnalities for a library to work. It is advised to read ./doc/CoreDocumentation.pdf before reading game or display documentation.
 
 ---
